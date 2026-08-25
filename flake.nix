@@ -62,6 +62,59 @@
             }
           ];
         };
+
+      # -------------------------------------------------------------------
+      # `nix run .#try` — the whole environment in a throwaway $HOME, so you
+      # can look at it before letting it near your real dotfiles.
+      #
+      # The sandbox path is fixed rather than an mktemp: home-manager bakes
+      # absolute paths into the generated files at *build* time, so the
+      # directory has to be known before the config is built.
+      # -------------------------------------------------------------------
+      tryDir = "/tmp/lazyshell-try";
+
+      mkTry =
+        system:
+        let
+          pkgs = pkgsFor system;
+          hm = mkHome {
+            inherit system;
+            username = "lazyshell";
+            host = "personal";
+            homeDirectory = tryDir;
+          };
+          profile = hm.config.home.path;
+        in
+        pkgs.writeShellApplication {
+          name = "lazyshell-try";
+          runtimeInputs = [ pkgs.coreutils ];
+          text = ''
+            try="${tryDir}"
+
+            # Refuse to clobber a directory belonging to someone else.
+            if [ -e "$try" ] && [ ! -O "$try" ]; then
+              echo "lazyshell: $try exists but is not yours — remove it first" >&2
+              exit 1
+            fi
+
+            # Lay the generated dotfiles out as activation would, minus the
+            # part that touches your real home.
+            rm -rf "$try"
+            mkdir -p "$try"
+            cp -rL --no-preserve=mode "${hm.activationPackage}/home-files/." "$try/"
+            chmod -R u+w "$try"
+            ln -sfn "${profile}" "$try/.nix-profile"
+
+            echo "lazyshell: sandbox shell — HOME is $try, nothing outside it is touched."
+            echo "           exit (ctrl-d) to drop back to your normal shell."
+            echo
+
+            export HOME="$try"
+            export NIX_PROFILES="${profile}"
+            export PATH="${profile}/bin:$PATH"
+            exec "${hm.config.programs.zsh.package}/bin/zsh"
+          '';
+        };
     in
     {
       # ---------------------------------------------------------------------
@@ -82,6 +135,18 @@
           host = "work";
         };
       };
+
+      # `nix run .#try` — see "Try it without activating" in the README.
+      apps = forAllSystems (system: {
+        try = {
+          type = "app";
+          program = "${mkTry system}/bin/lazyshell-try";
+        };
+      });
+
+      packages = forAllSystems (system: {
+        try = mkTry system;
+      });
 
       # `nix develop` gives you home-manager + formatter without installing them.
       devShells = forAllSystems (

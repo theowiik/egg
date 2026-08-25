@@ -117,6 +117,26 @@ With no `#fragment`, home-manager looks for a `homeConfigurations` entry named
 and finally plain `$USER`. Name your entry to match one of those and `hms` just
 works; otherwise append `#user@host` explicitly.
 
+### Try it first, without activating
+
+Activation writes into your real `$HOME`. If you'd rather look before you leap:
+
+```sh
+nix run .#try
+```
+
+That builds the whole configuration against a throwaway `$HOME`
+(`/tmp/lazyshell-try`) and drops you into a zsh running it — aliases,
+completions, prompt, plugins and all, with the full toolbox on `$PATH`. Your
+own dotfiles are never touched; `exit` and it's gone.
+
+Two things to know about the sandbox: `$HOME` points at the temp directory, so
+your ssh keys and credentials aren't visible in there, and it always builds the
+`personal` host. It's for kicking the tyres, not for daily use.
+
+`nix develop`, by contrast, is for working *on* this repo — it gives you
+`home-manager`, `nixfmt` and `git`, not the shell environment itself.
+
 ### 6. Make zsh your login shell
 
 Your zshrc lives at `~/.config/zsh/.zshrc` — home-manager writes a small
@@ -244,6 +264,7 @@ To reclaim disk space later: `home-manager expire-generations '-30 days'` and
 ```sh
 nix develop      # home-manager, nixfmt and git, without installing them
 nix fmt          # format every .nix file
+nix run .#try    # sandbox shell running the config (see above)
 ```
 
 `direnv allow` in the repo does the same automatically on `cd`.

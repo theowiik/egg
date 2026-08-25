@@ -3,7 +3,10 @@
 {
   programs.eza = {
     enable = true;
-    enableZshIntegration = false; # we define our own aliases below
+    # false only suppresses home-manager's own ls/ll/la/lt set — the
+    # `eza = "eza <options>"` alias below it is emitted either way, and that
+    # is what makes our `ls` inherit the options via alias expansion.
+    enableZshIntegration = false;
 
     git = true; # show git status per file
     icons = "auto"; # only when the terminal can render them
