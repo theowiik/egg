@@ -18,8 +18,8 @@
     stateVersion = "24.11";
 
     sessionVariables = {
-      EDITOR = "nvim";
-      VISUAL = "nvim";
+      # EDITOR is set by programs.helix.defaultEditor in modules/editor.nix.
+      VISUAL = "hx";
       PAGER = "less -FRX";
       # Colourful man pages via bat, which is installed in modules/packages.nix.
       MANPAGER = "sh -c 'col -bx | bat -l man -p'";

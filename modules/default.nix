@@ -8,6 +8,9 @@
     ./completions.nix
     ./aliases.nix
     ./eza.nix
+    ./editor.nix
+    ./tui.nix
+    ./help.nix
     ./git.nix
     ./prompt.nix
     ./navigation.nix

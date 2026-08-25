@@ -25,6 +25,38 @@
       };
     };
 
+    toolbox = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
+          options = {
+            category = lib.mkOption {
+              type = lib.types.str;
+              description = "Heading this tool is listed under by `lazyshell help`.";
+            };
+            cmd = lib.mkOption {
+              type = lib.types.str;
+              description = "The command you actually type.";
+            };
+            package = lib.mkOption {
+              type = lib.types.nullOr lib.types.package;
+              default = null;
+              description = "Package to install, or null when a programs.* module already installs it.";
+            };
+            desc = lib.mkOption {
+              type = lib.types.str;
+              description = "One line explaining what it is for.";
+            };
+          };
+        }
+      );
+      default = [ ];
+      description = ''
+        The toolbox. Single source of truth: `modules/packages.nix` installs
+        every entry with a package, and `lazyshell help` lists all of them.
+        Order is preserved, so entries render in the order written.
+      '';
+    };
+
     extraPackages = lib.mkOption {
       type = with lib.types; listOf package;
       default = [ ];

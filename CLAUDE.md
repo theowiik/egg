@@ -39,6 +39,10 @@ migrated: `programs.git.{userName,aliases,extraConfig}` → `programs.git.settin
 → `fzf.<widget>.{command,options}`, `stdenv.isLinux` → `stdenv.hostPlatform.isLinux`,
 `programs.zsh.initExtra` → `initContent`.
 
+Two home-manager defaults that bite: `programs.zellij.enableZshIntegration`
+auto-starts zellij in *every* shell (kept off), and `programs.helix.defaultEditor`
+sets `EDITOR` — so `home.nix` must not set it too.
+
 **Never run `home-manager switch`** unprompted — it rewrites the user's real
 dotfiles. Use `nix run .#try` to test behaviour instead.
 
@@ -60,6 +64,16 @@ repo:
   `git.userEmail`, `extraPackages`) that hosts set declaratively.
 
 New modules go in `modules/` **and** must be listed in `modules/default.nix`.
+
+### The toolbox is one list
+
+`lazyshell.toolbox` in `modules/packages.nix` is the single source of truth: it
+installs the packages *and* renders `lazyshell help` (`modules/help.nix`). Adding
+a tool means one entry, never two. `package = null` means a `programs.*` module
+already installs it — the entry stays so the tool is still discoverable in help.
+
+Help text is rendered at build time from `config`, including the alias list from
+`home.shellAliases`, so it cannot drift. Don't hand-write tool lists anywhere.
 
 ### zsh assembly order
 

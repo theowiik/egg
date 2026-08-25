@@ -3,14 +3,19 @@
 A portable shell environment: Nix flakes + home-manager, one repo, same zsh on
 every machine. Linux and macOS, no root, nothing touched outside `$HOME`.
 
-zsh with cached completions · eza as `ls` · starship · fzf, zoxide, direnv ·
-git with delta · bat, fd, ripgrep, jq, btop, dust, procs, tldr
+Around 40 curated tools with defaults already set: helix, lazygit, zellij, yazi,
+eza as `ls`, fzf, zoxide, ripgrep, fd, bat, and the usual suspects.
+
+**`lazyshell help`** lists every one of them with a line on what it's for —
+generated from the config, so it can't go stale. Also `lazyshell aliases`,
+`lazyshell keys`, `lazyshell doctor`.
 
 ```
 flake.nix     inputs + one entry per machine
 home.nix      shared base
 hosts/        per-machine identity and extra packages
-modules/      zsh, completions, aliases, packages, eza, git, prompt, navigation
+modules/      zsh, completions, aliases, packages, eza, editor, tui, git,
+              prompt, navigation, help
 ```
 
 Machine-specific things go in `hosts/`, never in `modules/` — that's what keeps
@@ -72,7 +77,7 @@ chsh -s "$(command -v zsh)"            # macOS already defaults to zsh
 
 | | |
 |---|---|
-| package everywhere | add it to `modules/packages.nix`, run `hms` |
+| package everywhere | add an entry to the toolbox in `modules/packages.nix`, run `hms` |
 | package on one machine | `lazyshell.extraPackages` in that `hosts/*.nix` |
 | alias | `modules/aliases.nix` (or `modules/eza.nix` for `ls`-family) |
 | configure a tool properly | new file in `modules/`, list it in `modules/default.nix` |
