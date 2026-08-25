@@ -61,6 +61,12 @@
         # Accept the autosuggestion with ctrl-space.
         bindkey '^ ' autosuggest-accept
 
+        # --- terminal title -------------------------------------------------
+        # So the tab says lazyshell too, not just the prompt.
+        autoload -Uz add-zsh-hook
+        _lazyshell_title() { print -Pn "\e]0;lazyshell: %~\a"; }
+        add-zsh-hook precmd _lazyshell_title
+
         # --- machine-local escape hatch ------------------------------------
         # Anything secret or one-off (work proxies, tokens) goes here and is
         # never committed. Create it by hand on the machine that needs it.
