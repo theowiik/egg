@@ -1,7 +1,7 @@
 # lazyshell
 
 A ready-to-use zsh setup with a polished prompt, live clock, automatic directory
-listings, and a system dashboard. For Linux and Apple Silicon macOS.
+listings, and a compact ASCII welcome. For Linux and Apple Silicon macOS.
 
 ## Get started
 

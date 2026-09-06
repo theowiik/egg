@@ -1,4 +1,4 @@
-# A local-only dashboard: no network requests or expensive package scans.
+# Instant shell welcome; the full hardware dashboard is available on demand.
 {
   config,
   lib,
@@ -7,12 +7,18 @@
 }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).ansi;
+  platform = if pkgs.stdenv.hostPlatform.isDarwin then "macOS" else "Linux";
+  welcomeLogo = [
+    "  |    _  ___ \\ /  __ | |  __ |   |  "
+    "  |   |_|  /   |  |_  |_| |_  |   |  "
+    "  |__ | | /__  |  __| | | |__ |__ |__"
+  ];
 in
 {
   options.lazyshell.welcome.enable = lib.mkOption {
     type = lib.types.bool;
     default = true;
-    description = "Show the system dashboard in interactive login shells.";
+    description = "Show a compact ASCII welcome in interactive login shells (no hardware detection).";
   };
 
   config = {
@@ -116,12 +122,16 @@ in
         # Login shells only; avoid noise in scripts, nested shells and dumb terminals.
         # Set LAZYSHELL_NO_WELCOME=1 in ~/.zshrc.local to opt out immediately.
         if [[ -o interactive && -o login && -t 1 && "''${TERM:-dumb}" != dumb && -z "''${LAZYSHELL_NO_WELCOME:-}" ]]; then
-          if (( COLUMNS >= 80 )); then
-            ${pkgs.fastfetch}/bin/fastfetch
+          # Only shell builtins here: no fastfetch, subprocesses or hardware probes.
+          print
+          printf '\033[${colors.brand}m'
+          if (( COLUMNS >= 40 )); then
+            print -rl -- ${lib.escapeShellArgs welcomeLogo}
           else
-            ${pkgs.fastfetch}/bin/fastfetch --logo none
+            print -r -- '  lazyshell'
           fi
-          printf '\033[${colors.brand}m  ready when you are.\033[0m  \033[${colors.dir}mlazyshell help · ctrl-r history · yy files\033[0m\n'
+          printf '\033[0m\033[${colors.subtle}m  %s\033[0m\n' '${config.lazyshell.profile} / ${platform} / ${toString (builtins.length config.lazyshell.toolbox)} tools'
+          printf '\033[${colors.dir}m  lazyshell help  /  lazyshell fetch\033[0m\n'
           print
         fi
       ''

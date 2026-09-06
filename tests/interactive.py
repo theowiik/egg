@@ -15,7 +15,7 @@ clock = re.compile(r"\d{2}:\d{2}:\d{2}")
 
 pid, fd = pty.fork()
 if pid == 0:
-    env = dict(os.environ, TERM="xterm-256color", LAZYSHELL_NO_WELCOME="1")
+    env = dict(os.environ, TERM="xterm-256color", LAZYSHELL_NO_WELCOME="")
     os.execve(os.environ["PREVIEW"], [os.environ["PREVIEW"]], env)
 
 fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", 30, 120, 0, 0))
@@ -49,6 +49,9 @@ try:
     while not clock.search(output) and time.monotonic() < deadline:
         output += read_for(0.2)
     assert clock.search(output), "live prompt did not start: " + output
+    assert "lazyshell help  /  lazyshell fetch" in output, "compact welcome missing: " + output
+    assert " tools" in output, "welcome context missing: " + output
+    assert not any(label in output for label in ("Memory", "Kernel", "Machine", "CPU")), "startup still displays hardware information: " + output
 
     output = read_for(2.3)
     assert len(set(clock.findall(output))) >= 2, "clock did not tick while idle: " + output

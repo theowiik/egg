@@ -87,13 +87,13 @@ with tempfile.TemporaryDirectory() as temp:
     '''.replace("@PROFILE@", os.environ["PROFILE"]).replace("@PREVIEW_ROOT@", str(root))
     output = run([preview, "-ic", shell_checks], env=env)
     assert "SHELL_CHECKS_OK" in output and "INHERITED_CONFIG_LOADED" not in output, output
-    assert "ready when you are" not in output, output
+    assert "lazyshell help  /  lazyshell fetch" not in output, output
     assert not root.exists(), "preview was not cleaned up"
     assert not (fake / "gitconfig").exists(), "preview wrote to inherited Git config"
 
     # A real login shell with redirected stdout stays quiet.
     output = run([preview, "-ic", "print QUIET_OK"], env=dict(env, TERM="xterm-256color"))
-    assert "QUIET_OK" in output and "ready when you are" not in output, output
+    assert "QUIET_OK" in output and "lazyshell help  /  lazyshell fetch" not in output, output
     output = run([preview, "-c", "exit 7"], env=env, success=False)
     assert not root.exists(), "failed child left a stale lock"
 
