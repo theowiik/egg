@@ -1,10 +1,5 @@
-# Prompt. Two lines, framed, with a lazyshell badge so it is always obvious
-# which environment you are standing in.
-#
-# Deliberately built from plain Unicode (box drawing, ⚡, ❯) rather than
-# Nerd Font glyphs: those live in the private use area and render as tofu
-# unless the terminal is set to a patched font — which on WSL means
-# installing it on the Windows side, not here.
+# A compact two-line prompt: lavender identity badge, slate directory segment,
+# and quiet status separators. Plain Unicode; no patched font required.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
@@ -22,11 +17,10 @@ in
       palettes.lazyshell = colors;
 
       format = lib.concatStrings [
-        "[╭─](frame)"
-        "[ ⚡ lazyshell ](bold brand)"
+        "[ lazyshell ](bold fg:surface bg:brand)"
+        "$directory"
         "$username"
         "$hostname"
-        "$directory"
         "$git_branch"
         "$git_status"
         "$git_state"
@@ -35,48 +29,49 @@ in
         "$jobs"
         "$status"
         "$line_break"
-        "[╰─](frame)"
+        " "
         "$character"
       ];
 
       right_format = "$time";
 
       username = {
-        format = "[$user]($style)";
+        format = "[ · ](frame)[$user]($style)";
         style_user = "bold dir";
         style_root = "bold err";
         show_always = false;
       };
       hostname = {
         ssh_only = true;
-        format = "[@$hostname ](bold dir)";
+        format = "[@$hostname](bold dir)";
       };
       jobs = {
-        format = "[│](frame)[ $number jobs ](bold nix)";
+        format = "[ · ](frame)[$number jobs](nix)";
         number_threshold = 1;
         symbol_threshold = 1;
       };
       status = {
         disabled = false;
-        format = "[│](frame)[ exit $status ](bold err)";
+        format = "[ · ](frame)[exit $status](bold err)";
       };
 
       directory = {
-        format = "[│](frame)[ $path ]($style)[$read_only]($read_only_style)";
-        style = "bold dir";
-        truncation_length = 4;
+        format = "[ $path ]($style)[$read_only]($read_only_style)";
+        style = "bold fg:dir bg:surface";
+        truncation_length = 3;
+        truncation_symbol = "…/";
         truncate_to_repo = false;
         read_only = " ro ";
-        read_only_style = "bold err";
+        read_only_style = "bold fg:err bg:surface";
       };
 
       git_branch = {
-        format = "[│](frame)[ $branch ]($style)";
+        format = "[ · ](frame)[$branch]($style)";
         style = "bold git";
       };
 
       git_status = {
-        format = "([$all_status$ahead_behind ]($style))";
+        format = "([ $all_status$ahead_behind]($style))";
         style = "bold dirty";
         conflicted = "≠\${count}";
         ahead = "↑\${count}";
@@ -90,11 +85,11 @@ in
         deleted = "✘\${count}";
       };
 
-      git_state.format = "[│](frame)[ $state $progress_current/$progress_total ](bold err)";
+      git_state.format = "[ · ](frame)[$state $progress_current/$progress_total](bold err)";
 
       # ❄ marks a `nix develop` / `nix shell` subshell.
       nix_shell = {
-        format = "[│](frame)[ ❄ $state ]($style)";
+        format = "[ · ](frame)[❄ $state]($style)";
         style = "bold nix";
         impure_msg = "impure";
         pure_msg = "pure";
@@ -102,7 +97,7 @@ in
 
       cmd_duration = {
         min_time = 2000;
-        format = "[│](frame)[ took $duration ]($style)";
+        format = "[ · ](frame)[$duration]($style)";
         style = "bold slow";
       };
 
