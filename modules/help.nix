@@ -27,9 +27,17 @@ let
     let
       len = builtins.stringLength s;
     in
-    s + lib.concatStrings (lib.genList (_: " ") (if n > len then n - len else 0));
+    # Always leave at least one space: a name longer than the column would
+    # otherwise run straight into its description.
+    s + lib.concatStrings (lib.genList (_: " ") (if n > len then n - len else 1));
 
-  row = name: desc: "  ${cmd}${pad 14 name}${reset}${grey}${desc}${reset}";
+  rowAt =
+    width: name: desc:
+    "  ${cmd}${pad width name}${reset}${grey}${desc}${reset}";
+  row = rowAt 14;
+  # `lazyshell <sub>` names are longer than a tool name, so Meta gets its own
+  # column width rather than wrapping every other block in dead space.
+  metaRow = rowAt 18;
 
   tools = config.lazyshell.toolbox;
   # lib.unique keeps first-seen order, so categories render as authored.
@@ -49,12 +57,12 @@ let
     ${banner}
     ${lib.concatStringsSep "\n" (map block categories)}
     ${head}Meta${reset}
-    ${row "lazyshell aliases" "every shortcut, generated from the config"}
-    ${row "lazyshell keys" "keybindings"}
-    ${row "lazyshell doctor" "check tools, config, activation and Git identity"}
-    ${row "hms / hmn" "apply configuration / read Home Manager news"}
-    ${row "lazyshell fetch" "live system dashboard (accepts fastfetch flags)"}
-    ${row "lazyshell edit" "open the config in $EDITOR"}
+    ${metaRow "lazyshell aliases" "every shortcut, generated from the config"}
+    ${metaRow "lazyshell keys" "keybindings"}
+    ${metaRow "lazyshell doctor" "check tools, config, activation and Git identity"}
+    ${metaRow "hms / hmn" "apply configuration / read Home Manager news"}
+    ${metaRow "lazyshell fetch" "live system dashboard (accepts fastfetch flags)"}
+    ${metaRow "lazyshell edit" "open the config in $EDITOR"}
   '';
 
   aliasesText = ''
