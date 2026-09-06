@@ -51,6 +51,7 @@ let
     ${row "lazyshell aliases" "every shortcut, generated from the config"}
     ${row "lazyshell keys" "keybindings"}
     ${row "lazyshell doctor" "is this environment actually active?"}
+    ${row "lazyshell fetch" "live system dashboard (accepts fastfetch flags)"}
     ${row "lazyshell edit" "open the config in $EDITOR"}
   '';
 
@@ -116,6 +117,13 @@ let
           ;;
         keys)
           show ${keysFile}
+          ;;
+        fetch)
+          shift
+          if [ ! -t 1 ]; then
+            exec ${pkgs.fastfetch}/bin/fastfetch --logo none --key-width 0 "$@"
+          fi
+          exec ${pkgs.fastfetch}/bin/fastfetch "$@"
           ;;
         doctor)
           printf '%-12s %s\n' "config" "$dir"

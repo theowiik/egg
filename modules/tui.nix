@@ -10,6 +10,23 @@
         nerdFontsVersion = "";
         showFileTree = true;
         mouseEvents = true;
+        theme = {
+          activeBorderColor = [
+            "#cba6f7"
+            "bold"
+          ];
+          inactiveBorderColor = [ "#585b70" ];
+          optionsTextColor = [ "#89b4fa" ];
+          selectedLineBgColor = [ "#313244" ];
+          cherryPickedCommitBgColor = [ "#45475a" ];
+          cherryPickedCommitFgColor = [ "#cba6f7" ];
+          unstagedChangesColor = [ "#f38ba8" ];
+          defaultFgColor = [ "#cdd6f4" ];
+          searchingActiveBorderColor = [
+            "#f9e2af"
+            "bold"
+          ];
+        };
       };
       git.paging = {
         colorArg = "always";
@@ -33,7 +50,8 @@
     enableZshIntegration = false;
     settings = {
       theme = "catppuccin-mocha";
-      pane_frames = false;
+      pane_frames = true;
+      ui.pane_frames.rounded_corners = true;
       copy_on_select = true;
       default_layout = "compact";
     };

@@ -13,6 +13,7 @@
     ./help.nix
     ./git.nix
     ./prompt.nix
+    ./fetch.nix
     ./navigation.nix
   ];
 }

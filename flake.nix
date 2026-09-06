@@ -24,7 +24,6 @@
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "x86_64-darwin"
         "aarch64-darwin"
       ];
 
@@ -112,7 +111,7 @@
             export HOME="$try"
             export NIX_PROFILES="${profile}"
             export PATH="${profile}/bin:$PATH"
-            exec "${hm.config.programs.zsh.package}/bin/zsh"
+            exec "${hm.config.programs.zsh.package}/bin/zsh" -l
           '';
         };
     in
@@ -141,6 +140,7 @@
         try = {
           type = "app";
           program = "${mkTry system}/bin/lazyshell-try";
+          meta.description = "Preview lazyshell in a temporary home directory";
         };
       });
 

@@ -31,18 +31,42 @@
       format = lib.concatStrings [
         "[╭─](frame)"
         "[ ⚡ lazyshell ](bold brand)"
+        "$username"
+        "$hostname"
         "$directory"
         "$git_branch"
         "$git_status"
         "$git_state"
         "$nix_shell"
         "$cmd_duration"
+        "$jobs"
+        "$status"
         "$line_break"
         "[╰─](frame)"
         "$character"
       ];
 
       right_format = "$time";
+
+      username = {
+        format = "[$user]($style)";
+        style_user = "bold dir";
+        style_root = "bold err";
+        show_always = false;
+      };
+      hostname = {
+        ssh_only = true;
+        format = "[@$hostname ](bold dir)";
+      };
+      jobs = {
+        format = "[│](frame)[ $number jobs ](bold nix)";
+        number_threshold = 1;
+        symbol_threshold = 1;
+      };
+      status = {
+        disabled = false;
+        format = "[│](frame)[ exit $status ](bold err)";
+      };
 
       directory = {
         format = "[│](frame)[ $path ]($style)[$read_only]($read_only_style)";

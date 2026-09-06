@@ -8,9 +8,15 @@
     # Respect .gitignore and include dotfiles, but never walk into .git.
     defaultCommand = "fd --type f --hidden --exclude .git";
     defaultOptions = [
-      "--height=40%"
+      "--height=60%"
       "--layout=reverse"
-      "--border"
+      "--border=rounded"
+      "--padding=1,2"
+      "--prompt='❯ '"
+      "--pointer='▌'"
+      "--marker='✓'"
+      "--color=bg+:#313244,fg:#cdd6f4,fg+:#cdd6f4,hl:#89b4fa,hl+:#89dceb"
+      "--color=border:#585b70,header:#cba6f7,info:#a6adc8,prompt:#cba6f7,pointer:#f5c2e7,marker:#a6e3a1,spinner:#f5c2e7"
       "--info=inline"
     ];
     # ctrl-t — insert a file path, with a preview.

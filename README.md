@@ -3,12 +3,28 @@
 A portable shell environment: Nix flakes + home-manager, one repo, same zsh on
 every machine. Linux and macOS, no root, nothing touched outside `$HOME`.
 
+Supported platforms: x86_64/aarch64 Linux and Apple Silicon macOS. The pinned
+Nixpkgs release no longer supports Intel macOS.
+
 Around 40 curated tools with defaults already set: helix, lazygit, zellij, yazi,
 eza as `ls`, fzf, zoxide, ripgrep, fd, bat, and the usual suspects.
 
 **`lazyshell help`** lists every one of them with a line on what it's for —
 generated from the config, so it can't go stale. Also `lazyshell aliases`,
-`lazyshell keys`, `lazyshell doctor`.
+`lazyshell keys`, `lazyshell doctor`, and **`lazyshell fetch`**.
+
+The terminal uses a coordinated Catppuccin Mocha palette: a framed two-line
+prompt, rounded fuzzy finder, highlighted Git panes, and matching editor and
+multiplexer. The prompt shows Git changes, Nix shells, slow commands, background
+jobs, exit codes, and your hostname over SSH. No Nerd Font is required for the
+prompt or dashboard.
+
+A custom fastfetch dashboard welcomes interactive login shells with live CPU,
+memory, disk, uptime, and workspace details. It uses local information only and
+hides the logo below 80 columns. Run `lazyshell fetch` anytime, or use
+`lazyshell fetch --logo none` for a compact summary; other fastfetch flags work too.
+To silence the welcome, add `export LAZYSHELL_NO_WELCOME=1` to `~/.zshrc.local`,
+or set `lazyshell.welcome.enable = false;` in your host config and rebuild.
 
 ```
 flake.nix     inputs + one entry per machine

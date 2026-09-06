@@ -175,7 +175,7 @@
       category = "System";
       cmd = "fastfetch";
       package = pkgs.fastfetch;
-      desc = "system summary";
+      desc = "live system dashboard; also `lazyshell fetch`";
     }
     {
       category = "System";
