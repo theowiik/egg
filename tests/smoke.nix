@@ -11,6 +11,7 @@ pkgs.runCommand "lazyshell-smoke"
     PREVIEW = "${preview}/bin/lazyshell-try";
     INSTALL = "${install}/bin/lazyshell-install";
     PREVIEW_ROOT = previewRoot;
+    INTERACTIVE_TESTS = ./interactive.py;
     PROFILE = "${home.config.home.path}";
   }
   ''

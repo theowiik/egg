@@ -5,6 +5,10 @@ let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
 in
 {
+  programs.zsh.initContent = lib.mkOrder 1700 (
+    lib.replaceStrings [ "@clockColor@" ] [ colors.muted ] (builtins.readFile ./clock.zsh)
+  );
+
   programs.starship = {
     enable = true;
     enableZshIntegration = true;

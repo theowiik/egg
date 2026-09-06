@@ -65,19 +65,19 @@
       # fixed. Its parent is an atomic lock, owned and removed by the launcher.
       previewRoot = "/tmp/lazyshell-preview";
       previewHome =
-        system:
+        system: root:
         mkHome {
           inherit system;
           username = "lazyshell";
           host = "personal";
-          homeDirectory = "${previewRoot}/home";
+          homeDirectory = "${root}/home";
         };
 
       mkTry =
         system:
         import ./lib/preview.nix {
           pkgs = pkgsFor system;
-          home = previewHome system;
+          home = previewHome system previewRoot;
           inherit previewRoot;
         };
 
@@ -161,15 +161,25 @@
         }
       );
 
-      checks = forAllSystems (system: {
-        smoke = import ./tests/smoke.nix {
+      checks = forAllSystems (
+        system:
+        let
           pkgs = pkgsFor system;
-          home = previewHome system;
-          preview = mkTry system;
-          install = mkInstall system;
-          inherit previewRoot;
-        };
-      });
+          testRoot = "/tmp/lazyshell-smoke-preview";
+          home = previewHome system testRoot;
+        in
+        {
+          smoke = import ./tests/smoke.nix {
+            inherit pkgs home;
+            preview = import ./lib/preview.nix {
+              inherit pkgs home;
+              previewRoot = testRoot;
+            };
+            install = mkInstall system;
+            previewRoot = testRoot;
+          };
+        }
+      );
 
       formatter = forAllSystems (system: (pkgsFor system).nixfmt);
     };

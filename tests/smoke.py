@@ -1,5 +1,6 @@
 """Behavior checks for the generated shell, run by `nix flake check`."""
 import os
+import runpy
 from pathlib import Path
 import subprocess
 import tempfile
@@ -32,7 +33,7 @@ with tempfile.TemporaryDirectory() as temp:
 
     shell_checks = r'''
       set -ex
-      [[ $HOME = /tmp/lazyshell-preview/home ]]
+      [[ $HOME = @PREVIEW_ROOT@/home ]]
       [[ $PWD = $HOME && $ZDOTDIR = $HOME/.config/zsh ]]
       [[ $XDG_CONFIG_HOME = $HOME/.config && $XDG_STATE_HOME = $HOME/.local/state ]]
       [[ $XDG_DATA_HOME = $HOME/.local/share && $XDG_CACHE_HOME = $HOME/.cache ]]
@@ -83,7 +84,7 @@ with tempfile.TemporaryDirectory() as temp:
       grep -q 'missing from PATH' doctor.txt
       zellij setup --check
       print SHELL_CHECKS_OK
-    '''.replace("@PROFILE@", os.environ["PROFILE"])
+    '''.replace("@PROFILE@", os.environ["PROFILE"]).replace("@PREVIEW_ROOT@", str(root))
     output = run([preview, "-ic", shell_checks], env=env)
     assert "SHELL_CHECKS_OK" in output and "INHERITED_CONFIG_LOADED" not in output, output
     assert "ready when you are" not in output, output
@@ -121,5 +122,7 @@ with tempfile.TemporaryDirectory() as temp:
     assert "Usage:" in run([install, "--help"], env=env)
     output = run([install], env=dict(env, LAZYSHELL_DIR=str(fake / "missing")), success=False)
     assert "no flake.nix" in output, output
+
+runpy.run_path(os.environ["INTERACTIVE_TESTS"], run_name="__main__")
 
 print("All lazyshell smoke checks passed")
