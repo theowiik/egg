@@ -4,6 +4,7 @@
   imports = [
     ./options.nix
     ./packages.nix
+    ./nix.nix
     ./zsh.nix
     ./completions.nix
     ./aliases.nix
