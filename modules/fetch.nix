@@ -9,9 +9,12 @@ let
   colors = (import ../lib/palette.nix { inherit lib; }).ansi;
   platform = if pkgs.stdenv.hostPlatform.isDarwin then "macOS" else "Linux";
   welcomeLogo = [
-    "  |    _  ___ \\ /  __ | |  __ |   |  "
-    "  |   |_|  /   |  |_  |_| |_  |   |  "
-    "  |__ | | /__  |  __| | | |__ |__ |__"
+    "  _                       _          _ _"
+    "  | | __ _ _____   _   ___| |__   ___| | |"
+    "  | |/ _` |_  / | | | / __| '_ \\ / _ \\ | |"
+    "  | | (_| |/ /| |_| | \\__ \\ | | |  __/ | |"
+    "  |_|\\__,_/___|\\__, | |___/_| |_|\\___|_|_|"
+    "               |___/"
   ];
 in
 {
@@ -125,7 +128,7 @@ in
           # Only shell builtins here: no fastfetch, subprocesses or hardware probes.
           print
           printf '\033[${colors.brand}m'
-          if (( COLUMNS >= 40 )); then
+          if (( COLUMNS >= 42 )); then
             print -rl -- ${lib.escapeShellArgs welcomeLogo}
           else
             print -r -- '  lazyshell'
