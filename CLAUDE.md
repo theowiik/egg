@@ -26,7 +26,7 @@ before any build after creating a file, or the error will be a confusing
 
 ```sh
 nix build --no-link '.#homeConfigurations."oet@puter".activationPackage'   # Linux, builds
-nix eval --raw '.#homeConfigurations."theo@Theos-MacBook-Neo.local".activationPackage.drvPath' # macOS, evaluates only
+nix eval --raw '.#homeConfigurations.neo.activationPackage.drvPath' # macOS, evaluates only
 nix flake check
 nix fmt                                                                     # nixfmt, must leave no diff
 nix run .#try                                                               # real zsh in a sandbox $HOME

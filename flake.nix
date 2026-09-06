@@ -110,19 +110,22 @@
       # Machines. Key format is "user@host" — that is what you pass to
       # `home-manager switch --flake .#user@host`.
       # ---------------------------------------------------------------------
-      homeConfigurations = {
+      homeConfigurations = rec {
         "oet@puter" = mkHome {
           system = "x86_64-linux";
           username = "oet";
           host = "personal";
         };
 
-        # This Mac; the key matches the login user and hostname.
-        "theo@Theos-MacBook-Neo.local" = mkHome {
+        # Personal Mac, also selectable explicitly with --flake .#neo.
+        neo = mkHome {
           system = "aarch64-darwin";
           username = "theo";
-          host = "work";
+          host = "personal";
         };
+
+        # Let bare `hms` and `nix run .#install` find neo automatically.
+        "theo@Theos-MacBook-Neo.local" = neo;
       };
 
       # Preview and install both use the versions pinned by this flake.
