@@ -31,11 +31,12 @@ username and hostname with your own:
 };
 ```
 
-Then activate and start zsh:
+Set your Git name and email in `hosts/personal.nix` using
+`lazyshell.git.userName` and `lazyshell.git.userEmail`. Then activate and start zsh:
 
 ```sh
-nix run home-manager/master -- switch -b backup --flake ~/git/lazyshell
-exec zsh -l
+nix run .#install
+exec ~/.nix-profile/bin/zsh -l
 ```
 
 ## Everyday commands
@@ -44,5 +45,9 @@ exec zsh -l
 lazyshell help     # discover the tools
 lazyshell keys     # keyboard shortcuts
 lazyshell fetch    # system dashboard
+lazyshell doctor   # check the setup
 hms               # apply config changes
 ```
+
+Cloned elsewhere? Set `lazyshell.directory` in your host config, or export
+`LAZYSHELL_DIR`. Run `nix flake check` to test changes before applying them.

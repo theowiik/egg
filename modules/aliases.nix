@@ -1,6 +1,6 @@
 # Aliases and small shell functions.
 # eza-based ls aliases live next to the eza config in modules/eza.nix.
-{ lib, pkgs, ... }:
+{ lib, ... }:
 {
   home.shellAliases = {
     # --- safety nets ---
@@ -32,32 +32,10 @@
     gpl = "git pull --rebase";
 
     # --- nix / lazyshell ---
-    hms = "home-manager switch --flake ~/git/lazyshell";
-    hmn = "home-manager news --flake ~/git/lazyshell";
-    nsh = "nix shell nixpkgs#";
-    nrun = "nix run nixpkgs#";
+    hms = "lazyshell switch";
+    hmn = "lazyshell news";
     ngc = "nix-collect-garbage -d";
   };
 
-  programs.zsh.initContent = lib.mkOrder 1000 ''
-    # --- functions --------------------------------------------------------
-
-    # mkcd <dir> — create a directory and step into it.
-    mkcd() { mkdir -p -- "$1" && cd -- "$1"; }
-
-    # up [n] — climb n directories (default 1).
-    up() {
-      local n=''${1:-1}
-      local path=""
-      for _ in $(seq "$n"); do path="../$path"; done
-      cd "$path" || return
-    }
-
-    # ff <pattern> — fuzzy-open a file match in $EDITOR.
-    ff() {
-      local file
-      file=$(fd --type f --hidden --exclude .git "''${1:-}" | fzf --select-1 --exit-0) || return
-      [[ -n "$file" ]] && ''${EDITOR:-vi} "$file"
-    }
-  '';
+  programs.zsh.initContent = lib.mkOrder 1000 (builtins.readFile ./helpers.zsh);
 }

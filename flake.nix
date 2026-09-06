@@ -12,7 +12,6 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       home-manager,
       ...
@@ -62,58 +61,49 @@
           ];
         };
 
-      # -------------------------------------------------------------------
-      # `nix run .#try` — the whole environment in a throwaway $HOME, so you
-      # can look at it before letting it near your real dotfiles.
-      #
-      # The sandbox path is fixed rather than an mktemp: home-manager bakes
-      # absolute paths into the generated files at *build* time, so the
-      # directory has to be known before the config is built.
-      # -------------------------------------------------------------------
-      tryDir = "/tmp/lazyshell-try";
+      # Home Manager embeds HOME in generated files, so the preview path is
+      # fixed. Its parent is an atomic lock, owned and removed by the launcher.
+      previewRoot = "/tmp/lazyshell-preview";
+      previewHome =
+        system:
+        mkHome {
+          inherit system;
+          username = "lazyshell";
+          host = "personal";
+          homeDirectory = "${previewRoot}/home";
+        };
 
       mkTry =
         system:
+        import ./lib/preview.nix {
+          pkgs = pkgsFor system;
+          home = previewHome system;
+          inherit previewRoot;
+        };
+
+      mkInstall =
+        system:
         let
           pkgs = pkgsFor system;
-          hm = mkHome {
-            inherit system;
-            username = "lazyshell";
-            host = "personal";
-            homeDirectory = tryDir;
-          };
-          profile = hm.config.home.path;
         in
         pkgs.writeShellApplication {
-          name = "lazyshell-try";
-          runtimeInputs = [ pkgs.coreutils ];
+          name = "lazyshell-install";
+          runtimeInputs = [ home-manager.packages.${system}.home-manager ];
           text = ''
-            try="${tryDir}"
-
-            # Refuse to clobber a directory belonging to someone else.
-            if [ -e "$try" ] && [ ! -O "$try" ]; then
-              echo "lazyshell: $try exists but is not yours — remove it first" >&2
+            if [[ "''${1:-}" = --help || "''${1:-}" = -h ]]; then
+              echo 'Usage: nix run .#install -- [Home Manager switch options]'
+              echo 'Uses the current directory, or LAZYSHELL_DIR, as the configuration.'
+              exit 0
+            fi
+            dir="''${LAZYSHELL_DIR:-$PWD}"
+            if [ ! -f "$dir/flake.nix" ]; then
+              echo "lazyshell: no flake.nix in $dir; run from the repository or set LAZYSHELL_DIR" >&2
               exit 1
             fi
-
-            # Lay the generated dotfiles out as activation would, minus the
-            # part that touches your real home.
-            rm -rf "$try"
-            mkdir -p "$try"
-            cp -rL --no-preserve=mode "${hm.activationPackage}/home-files/." "$try/"
-            chmod -R u+w "$try"
-            ln -sfn "${profile}" "$try/.nix-profile"
-
-            echo "lazyshell: sandbox shell — HOME is $try, nothing outside it is touched."
-            echo "           exit (ctrl-d) to drop back to your normal shell."
-            echo
-
-            export HOME="$try"
-            export NIX_PROFILES="${profile}"
-            export PATH="${profile}/bin:$PATH"
-            exec "${hm.config.programs.zsh.package}/bin/zsh" -l
+            exec home-manager switch -b backup --flake "$dir" "$@"
           '';
         };
+
     in
     {
       # ---------------------------------------------------------------------
@@ -135,8 +125,13 @@
         };
       };
 
-      # `nix run .#try` — see "Try it without activating" in the README.
+      # Preview and install both use the versions pinned by this flake.
       apps = forAllSystems (system: {
+        install = {
+          type = "app";
+          program = "${mkInstall system}/bin/lazyshell-install";
+          meta.description = "Install lazyshell with the pinned Home Manager";
+        };
         try = {
           type = "app";
           program = "${mkTry system}/bin/lazyshell-try";
@@ -146,6 +141,7 @@
 
       packages = forAllSystems (system: {
         try = mkTry system;
+        install = mkInstall system;
       });
 
       # `nix develop` gives you home-manager + formatter without installing them.
@@ -164,6 +160,16 @@
           };
         }
       );
+
+      checks = forAllSystems (system: {
+        smoke = import ./tests/smoke.nix {
+          pkgs = pkgsFor system;
+          home = previewHome system;
+          preview = mkTry system;
+          install = mkInstall system;
+          inherit previewRoot;
+        };
+      });
 
       formatter = forAllSystems (system: (pkgsFor system).nixfmt);
     };

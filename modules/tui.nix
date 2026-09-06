@@ -1,5 +1,8 @@
 # Full-screen terminal apps.
-{ ... }:
+{ lib, ... }:
+let
+  colors = (import ../lib/palette.nix { inherit lib; }).hex;
+in
 {
   # `lazygit` — stage hunks, rebase, cherry-pick without memorising flags.
   programs.lazygit = {
@@ -12,18 +15,18 @@
         mouseEvents = true;
         theme = {
           activeBorderColor = [
-            "#cba6f7"
+            "${colors.brand}"
             "bold"
           ];
-          inactiveBorderColor = [ "#585b70" ];
-          optionsTextColor = [ "#89b4fa" ];
-          selectedLineBgColor = [ "#313244" ];
-          cherryPickedCommitBgColor = [ "#45475a" ];
-          cherryPickedCommitFgColor = [ "#cba6f7" ];
-          unstagedChangesColor = [ "#f38ba8" ];
-          defaultFgColor = [ "#cdd6f4" ];
+          inactiveBorderColor = [ "${colors.frame}" ];
+          optionsTextColor = [ "${colors.dir}" ];
+          selectedLineBgColor = [ "${colors.surface}" ];
+          cherryPickedCommitBgColor = [ "${colors.overlay}" ];
+          cherryPickedCommitFgColor = [ "${colors.brand}" ];
+          unstagedChangesColor = [ "${colors.err}" ];
+          defaultFgColor = [ "${colors.text}" ];
           searchingActiveBorderColor = [
-            "#f9e2af"
+            "${colors.dirty}"
             "bold"
           ];
         };

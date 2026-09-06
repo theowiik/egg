@@ -5,6 +5,9 @@
   pkgs,
   ...
 }:
+let
+  colors = (import ../lib/palette.nix { inherit lib; }).ansi;
+in
 {
   options.lazyshell.welcome.enable = lib.mkOption {
     type = lib.types.bool;
@@ -27,9 +30,9 @@
           $3       lazyshell
         '';
         color = {
-          "1" = "38;2;203;166;247";
-          "2" = "38;2;137;180;250";
-          "3" = "38;2;166;227;161";
+          "1" = colors.brand;
+          "2" = colors.dir;
+          "3" = colors.git;
         };
         padding = {
           top = 1;
@@ -40,8 +43,8 @@
         separator = "  ";
         key.width = 12;
         color = {
-          keys = "38;2;137;180;250";
-          title = "38;2;203;166;247";
+          keys = colors.dir;
+          title = colors.brand;
         };
         bar = {
           char.elapsed = "━";
@@ -118,7 +121,7 @@
           else
             ${pkgs.fastfetch}/bin/fastfetch --logo none
           fi
-          print -P '%F{183}  ready when you are.%f  %F{110}lazyshell help%f · %F{110}ctrl-r%f history · %F{110}yy%f files'
+          printf '\033[${colors.brand}m  ready when you are.\033[0m  \033[${colors.dir}mlazyshell help · ctrl-r history · yy files\033[0m\n'
           print
         fi
       ''

@@ -11,15 +11,16 @@
   ...
 }:
 let
+  colors = (import ../lib/palette.nix { inherit lib; }).ansi;
   # Nix has no \e escape, so pull an ESC character out of JSON.
   esc = builtins.fromJSON ''"\u001b"'';
   sgr = n: "${esc}[${n}m";
 
   reset = sgr "0";
-  brand = sgr "1;38;2;203;166;247"; # matches the prompt badge
-  head = sgr "1;38;2;137;180;250";
-  cmd = sgr "38;2;166;227;161";
-  grey = sgr "38;2;108;112;134";
+  brand = sgr "1;${colors.brand}"; # matches the prompt badge
+  head = sgr "1;${colors.dir}";
+  cmd = sgr colors.git;
+  grey = sgr colors.muted;
 
   pad =
     n: s:
@@ -50,7 +51,8 @@ let
     ${head}Meta${reset}
     ${row "lazyshell aliases" "every shortcut, generated from the config"}
     ${row "lazyshell keys" "keybindings"}
-    ${row "lazyshell doctor" "is this environment actually active?"}
+    ${row "lazyshell doctor" "check tools, config, activation and Git identity"}
+    ${row "hms / hmn" "apply configuration / read Home Manager news"}
     ${row "lazyshell fetch" "live system dashboard (accepts fastfetch flags)"}
     ${row "lazyshell edit" "open the config in $EDITOR"}
   '';
@@ -83,6 +85,8 @@ let
     ${row "up [n]" "climb n directories"}
     ${row "ff [pat]" "fuzzy-find a file and open it in the editor"}
     ${row "yy" "file manager, exits into the directory you left off in"}
+    ${row "nsh <pkg>" "temporary shell with a nixpkgs package"}
+    ${row "nrun <pkg>" "run a nixpkgs package"}
   '';
 
   helpFile = pkgs.writeText "lazyshell-help" helpText;
@@ -106,7 +110,8 @@ let
         fi
       }
 
-      dir="''${LAZYSHELL_DIR:-$HOME/git/lazyshell}"
+      dir=${lib.escapeShellArg config.lazyshell.directory}
+      dir="''${LAZYSHELL_DIR:-$dir}"
 
       case "''${1:-help}" in
         help | -h | --help)
@@ -126,14 +131,12 @@ let
           exec ${pkgs.fastfetch}/bin/fastfetch "$@"
           ;;
         doctor)
-          printf '%-12s %s\n' "config" "$dir"
-          printf '%-12s %s\n' "shell" "''${SHELL:-unknown}"
-          printf '%-12s %s\n' "editor" "''${EDITOR:-unset}"
-          if [ -e "$HOME/.local/state/nix/profiles/home-manager" ]; then
-            printf '%-12s %s\n' "generation" "$(readlink -f "$HOME/.local/state/nix/profiles/home-manager")"
-          else
-            printf '%-12s %s\n' "generation" "not activated - see the README"
-          fi
+          ${builtins.readFile ./doctor.sh}
+          ;;
+        switch | news)
+          action="$1"
+          shift
+          exec home-manager "$action" --flake "$dir" "$@"
           ;;
         edit)
           cd "$dir" && exec ''${EDITOR:-hx} .

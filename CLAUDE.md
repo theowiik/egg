@@ -95,6 +95,14 @@ Our `ls = "eza"` in `modules/eza.nix` inherits `--git`/`--icons`/`--header`
 through zsh expanding the alias twice. Removing either alias silently drops the
 options.
 
-`nix run .#try` uses a **fixed** sandbox path (`/tmp/lazyshell-try`), not
-`mktemp`, because home-manager bakes absolute `$HOME` paths into the generated
-files at build time. The path must be known before the config is built.
+`nix run .#try` uses a **fixed** home (`/tmp/lazyshell-preview/home`) because
+home-manager embeds absolute paths. The launcher atomically creates the parent
+as a lock, refuses an existing directory, starts with a clean environment, and
+removes its own preview on exit. It is a configuration preview, not a filesystem
+sandbox. Its shell accepts arguments for smoke tests.
+
+`lib/palette.nix` owns the shell UI colors. `modules/helpers.zsh` and
+`modules/doctor.sh` are embedded in the generated shell/CLI. `nix flake check`
+runs `tests/smoke.py` against a built preview, including helpers, diagnostics,
+environment isolation, concurrent sessions and cleanup. Use
+`--all-systems --no-build` to evaluate other platforms without a cross-platform builder.

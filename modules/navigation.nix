@@ -1,5 +1,8 @@
 # Jumping around: fzf, zoxide, direnv. All wired into zsh by home-manager.
-{ ... }:
+{ lib, ... }:
+let
+  colors = (import ../lib/palette.nix { inherit lib; }).hex;
+in
 {
   programs.fzf = {
     enable = true;
@@ -15,8 +18,8 @@
       "--prompt='❯ '"
       "--pointer='▌'"
       "--marker='✓'"
-      "--color=bg+:#313244,fg:#cdd6f4,fg+:#cdd6f4,hl:#89b4fa,hl+:#89dceb"
-      "--color=border:#585b70,header:#cba6f7,info:#a6adc8,prompt:#cba6f7,pointer:#f5c2e7,marker:#a6e3a1,spinner:#f5c2e7"
+      "--color=bg+:${colors.surface},fg:${colors.text},fg+:${colors.text},hl:${colors.dir},hl+:${colors.cyan}"
+      "--color=border:${colors.frame},header:${colors.brand},info:${colors.subtle},prompt:${colors.brand},pointer:${colors.pink},marker:${colors.git},spinner:${colors.pink}"
       "--info=inline"
     ];
     # ctrl-t — insert a file path, with a preview.

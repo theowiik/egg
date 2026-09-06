@@ -6,6 +6,9 @@
 # unless the terminal is set to a patched font — which on WSL means
 # installing it on the Windows side, not here.
 { lib, ... }:
+let
+  colors = (import ../lib/palette.nix { inherit lib; }).hex;
+in
 {
   programs.starship = {
     enable = true;
@@ -16,17 +19,7 @@
       command_timeout = 1000;
       palette = "lazyshell";
 
-      palettes.lazyshell = {
-        frame = "#585b70";
-        brand = "#cba6f7";
-        dir = "#89b4fa";
-        git = "#a6e3a1";
-        dirty = "#f9e2af";
-        nix = "#74c7ec";
-        slow = "#fab387";
-        err = "#f38ba8";
-        muted = "#6c7086";
-      };
+      palettes.lazyshell = colors;
 
       format = lib.concatStrings [
         "[╭─](frame)"

@@ -2,8 +2,6 @@
 # Per-machine differences live in hosts/*.nix.
 {
   inputs,
-  config,
-  pkgs,
   ...
 }:
 {

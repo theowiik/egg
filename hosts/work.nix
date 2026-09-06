@@ -9,16 +9,7 @@
       # Typical work-only tooling; trim to taste.
       kubectl
       awscli2
-      jq
     ];
   };
 
-  # Work often wants a different identity only under a specific directory;
-  # this is the declarative version of a gitconfig `includeIf`.
-  programs.git.includes = [
-    {
-      condition = "gitdir:~/work/";
-      contents.user.email = "theo.wiik@example-corp.com";
-    }
-  ];
 }

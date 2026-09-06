@@ -1,8 +1,13 @@
 # Small option namespace so host files stay declarative one-liners
 # instead of copy-pasted blocks of program config.
-{ lib, ... }:
+{ config, lib, ... }:
 {
   options.lazyshell = {
+    directory = lib.mkOption {
+      type = lib.types.str;
+      default = "${config.home.homeDirectory}/git/lazyshell";
+      description = "Repository path used by rebuild, news and edit commands; LAZYSHELL_DIR overrides it.";
+    };
     profile = lib.mkOption {
       type = lib.types.enum [
         "personal"
