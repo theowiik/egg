@@ -117,8 +117,8 @@
           host = "personal";
         };
 
-        # Template for the work machine — edit username/system, then switch.
-        "theo@work" = mkHome {
+        # This Mac; the key matches the login user and hostname.
+        "theo@Theos-MacBook-Neo.local" = mkHome {
           system = "aarch64-darwin";
           username = "theo";
           host = "work";
