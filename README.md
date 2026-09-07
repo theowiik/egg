@@ -76,8 +76,10 @@ file or export `EGG_DIR`, so `egg switch` and `egg edit` find the repository.
 | `Alt+C` | change into a directory |
 | `Tab` | completion menu, arrows to pick |
 
-The only shell aliases are `ls`, plus `hms` and `hmn` for applying the
-configuration and reading Home Manager news. Run `egg aliases` to see them.
+The shell aliases are the usual git shorthands (`g`, `gs`, `ga`, `gc`, `gco`,
+`gd`, `gl`, `gp`, `gpl`), `ls`, and `hms` / `hmn` for applying the configuration
+and reading Home Manager news. Run `egg aliases` to see them, and `git` has its
+own too: `git st`, `git co`, `git lg`, `git last`, `git amend`, `git unstage`.
 
 ## The tools
 
@@ -93,7 +95,7 @@ prints the same list with current descriptions.
 | `starship` | the prompt |
 | `fd` | find, but fast and aware of `.gitignore`; backs the fzf widgets |
 | `rg` | recursive grep, fast |
-| `git` | configured with delta diffs and a few log aliases |
+| `git` | configured with delta diffs, plus `git st` / `git lg` style aliases |
 | `hx` | helix: modal editor, LSP built in, no config needed |
 | `curl` | still the one for scripts |
 | `wget` | download a file |

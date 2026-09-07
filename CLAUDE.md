@@ -69,7 +69,8 @@ New modules go in `modules/` **and** must be listed in `modules/default.nix`.
 The toolbox was trimmed to ten core tools on purpose: eza, bat, fzf, starship,
 fd, rg, git, hx, curl, wget. `ls` is the one standard command that is aliased
 away (to eza, in `modules/eza.nix`); `cat`, `du`, `ps` and `grep` are the real
-ones, because the point is to learn the originals. Don't reintroduce further
+ones, because the point is to learn the originals. The conventional git
+shorthands (`g`, `gs`, `gd`, …) are wanted and stay. Don't reintroduce further
 replacement aliases or add tools speculatively; add one when it is wanted.
 
 `egg.toolbox` in `modules/packages.nix` is the single source of truth: it
