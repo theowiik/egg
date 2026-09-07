@@ -5,7 +5,7 @@
   options.egg = {
     directory = lib.mkOption {
       type = lib.types.str;
-      default = "${config.home.homeDirectory}/git/lazyshell";
+      default = "${config.home.homeDirectory}/git/egg";
       description = "Repository path used by rebuild, news and edit commands; EGG_DIR overrides it.";
     };
     profile = lib.mkOption {
