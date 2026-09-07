@@ -39,9 +39,8 @@ migrated: `programs.git.{userName,aliases,extraConfig}` → `programs.git.settin
 → `fzf.<widget>.{command,options}`, `stdenv.isLinux` → `stdenv.hostPlatform.isLinux`,
 `programs.zsh.initExtra` → `initContent`.
 
-Two home-manager defaults that bite: `programs.zellij.enableZshIntegration`
-auto-starts zellij in *every* shell (kept off), and `programs.helix.defaultEditor`
-sets `EDITOR` — so `home.nix` must not set it too.
+One home-manager default that bites: `programs.helix.defaultEditor` sets
+`EDITOR`, so `home.nix` must not set it too.
 
 **Never run `home-manager switch`** unprompted — it rewrites the user's real
 dotfiles. Use `nix run .#try` to test behaviour instead.
@@ -65,7 +64,13 @@ repo:
 
 New modules go in `modules/` **and** must be listed in `modules/default.nix`.
 
-### The toolbox is one list
+### The toolbox is one list, and it is deliberately short
+
+The toolbox was trimmed to ten core tools on purpose: eza, bat, fzf, starship,
+fd, rg, git, hx, curl, wget. Nothing is aliased over a standard command — `ls`,
+`cat`, `du`, `ps` and `grep` are the real ones — because the point is to learn
+the originals. Don't reintroduce replacement aliases or add tools speculatively;
+add one when it is actually wanted.
 
 `egg.toolbox` in `modules/packages.nix` is the single source of truth: it
 installs the packages *and* renders `egg help` (`modules/help.nix`). Adding
@@ -83,17 +88,15 @@ Several modules write into one `.zshrc`, so ordering is explicit:
   (`modules/completions.nix`) or completions silently won't load.
 - `lib.mkOrder 1000` — end of `.zshrc`: options, keybindings, functions, zstyles.
 
-Completions come from the packages themselves: each installs `_eza`, `_gh`, `_fd`
+Completions come from the packages themselves: each installs `_eza`, `_fd`, `_rg`
 … into `$out/share/zsh/site-functions`, which reaches `$fpath` via
 `config.home.profileDirectory` (`~/.nix-profile`). Nothing is vendored.
 
 ### Two subtleties worth not re-discovering
 
 `programs.eza.enableZshIntegration = false` only suppresses home-manager's own
-`ls`/`ll`/`la` aliases — the `eza = "eza <options>"` alias is emitted regardless.
-Our `ls = "eza"` in `modules/eza.nix` inherits `--git`/`--icons`/`--header`
-through zsh expanding the alias twice. Removing either alias silently drops the
-options.
+`ls`/`ll`/`la` aliases — the `eza = "eza <options>"` alias is emitted regardless,
+and that alias is what carries `--git`/`--icons`/`--header` when you type `eza`.
 
 `nix run .#try` uses a **fixed** home (`/tmp/egg-preview/home`) because
 home-manager embeds absolute paths. The launcher atomically creates the parent

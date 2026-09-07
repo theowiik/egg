@@ -13,11 +13,9 @@
         email = config.egg.git.userEmail;
       };
 
+      # Only aliases that add something git has no short spelling for;
+      # status, checkout and commit are worth typing out.
       alias = {
-        st = "status --short --branch";
-        co = "checkout";
-        br = "branch";
-        ci = "commit";
         amend = "commit --amend --no-edit";
         lg = "log --graph --pretty=format:'%C(yellow)%h%Creset %C(blue)%an%Creset %C(green)%ar%Creset %s%C(auto)%d%Creset'";
         last = "log -1 --stat";
@@ -55,10 +53,5 @@
       line-numbers = true;
       side-by-side = false;
     };
-  };
-
-  programs.gh = {
-    enable = true;
-    settings.git_protocol = "ssh";
   };
 }

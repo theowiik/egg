@@ -1,4 +1,4 @@
-"""Exercise idle redraws and directory hooks inside an actual terminal."""
+"""Exercise idle prompt redraws inside an actual terminal."""
 import errno
 import fcntl
 import os
@@ -49,7 +49,7 @@ try:
     while not clock.search(output) and time.monotonic() < deadline:
         output += read_for(0.2)
     assert clock.search(output), "live prompt did not start: " + output
-    assert "egg help  /  egg fetch" in output, "compact welcome missing: " + output
+    assert "egg help" in output, "compact welcome missing: " + output
     assert " tools" in output, "welcome context missing: " + output
     assert not any(label in output for label in ("Memory", "Kernel", "Machine", "CPU")), "startup still displays hardware information: " + output
 
@@ -65,42 +65,6 @@ try:
     send('\n')
     output = read_for(0.7)
     assert "BUFFER_SURVIVES:1" in output, "redraw changed input or rerendered Starship: " + output
-
-    # A directory listing should come from the hook, not echoed command text.
-    destination = root / "home" / "enter-me"
-    destination.mkdir()
-    (destination / "AUTO_LIST_TOKEN").touch()
-    send('cd "$HOME/enter-me"\n')
-    output = read_for(0.7)
-    assert "AUTO_LIST_TOKEN" in output, "directory contents were not listed: " + output
-    send('cd "$HOME/missing-directory"\n')
-    output = read_for(0.7)
-    assert "AUTO_LIST_TOKEN" not in output, "failed cd triggered a listing"
-    send('cd "$HOME"; cd "$HOME/enter-me" > "$HOME/redirected"\n')
-    read_for(0.7)
-    assert (root / "home" / "redirected").read_bytes() == b"", "listing polluted redirected output"
-    send('captured=$(cd "$HOME/enter-me"; print CAPTURE_TOKEN); print -r -- "$captured"\n')
-    output = read_for(0.7)
-    assert "AUTO_LIST_TOKEN" not in output, "listing polluted command substitution"
-    send('EGG_NO_AUTO_LS=1; cd "$HOME/enter-me"\n')
-    output = read_for(0.7)
-    assert "AUTO_LIST_TOKEN" not in output, "directory listing opt-out did not work"
-
-    # Tips use the original command and leave execution and exit status alone.
-    send("alias tiptest='print ALIAS_EXECUTED'\n")
-    read_for(0.5)
-    send('print ALIAS_EXECUTED\n')
-    output = read_for(0.7)
-    assert "tip" in output and "tiptest" in output, "alias tip missing: " + output
-    assert "ALIAS_EXECUTED" in output, "tip prevented execution"
-    send('tiptest\n')
-    output = read_for(0.7)
-    assert "for" not in output, "already used alias produced a tip: " + output
-    send('EGG_NO_ALIAS_TIPS=1\n')
-    read_for(0.5)
-    send('print ALIAS_EXECUTED\n')
-    output = read_for(0.7)
-    assert "tiptest" not in output, "alias tip opt-out failed: " + output
 
     # No redraws should run over a foreground command's output.
     send('touch "$HOME/foreground-started"; sleep 2\n')
@@ -130,4 +94,4 @@ finally:
         os.waitpid(pid, 0)
     os.close(fd)
 
-print("Interactive directory listing and live clock checks passed")
+print("Interactive live clock checks passed")

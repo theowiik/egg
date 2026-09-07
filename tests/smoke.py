@@ -40,17 +40,13 @@ with tempfile.TemporaryDirectory() as temp:
       [[ -z ${GIT_CONFIG_GLOBAL:-} && $EDITOR = hx ]]
       original_path=$PATH
       mkcd "$HOME/a directory/child"
-      up
-      [[ $PWD = "$HOME/a directory" && $PATH = $original_path ]]
-      up 0
-      [[ $PWD = "$HOME/a directory" ]]
-      up 01
-      [[ $PWD = $HOME ]]
-      if up nope || up -1 || up 1 2 || mkcd; then exit 21; fi
-      nix() { printf '%s\n' "$@"; }
-      [[ $(nsh ripgrep --offline) = $'shell\nnixpkgs#ripgrep\n--offline' ]]
-      [[ $(nrun hello -- --help) = $'run\nnixpkgs#hello\n--\n--help' ]]
-      unfunction nix
+      [[ $PWD = "$HOME/a directory/child" && $PATH = $original_path ]]
+      cd "$HOME"
+      if mkcd; then exit 21; fi
+      # Standard commands are the standard commands, not aliases over them.
+      for standard in ls cat du ps grep rm cp mv; do
+        [[ -z ${aliases[$standard]:-} ]]
+      done
       mkdir "$HOME/stubs"
       printf '#!/bin/sh\nprintf "%%s\\n" "$@" > "$HOME/hm-args"\n' > "$HOME/stubs/home-manager"
       chmod +x "$HOME/stubs/home-manager"
@@ -76,8 +72,6 @@ with tempfile.TemporaryDirectory() as temp:
       egg aliases > aliases.txt
       grep -q 'egg switch' aliases.txt
       if egg unknown > /dev/null 2>&1; then exit 22; fi
-      egg fetch > fetch.txt
-      [[ $(<fetch.txt) != *$'\e'* ]]
       if egg doctor > doctor.txt; then exit 23; fi
       grep -q 'placeholder' doctor.txt
       git config --global user.name 'Smoke Test'
@@ -89,18 +83,17 @@ with tempfile.TemporaryDirectory() as temp:
       mv "$HOME/starship.saved" "$XDG_CONFIG_HOME/starship.toml"
       if PATH=/nonexistent @PROFILE@/bin/egg doctor > doctor.txt; then exit 25; fi
       grep -q 'missing from PATH' doctor.txt
-      zellij setup --check
       print SHELL_CHECKS_OK
     '''.replace("@PROFILE@", os.environ["PROFILE"]).replace("@PREVIEW_ROOT@", str(root))
     output = run([preview, "-ic", shell_checks], env=env)
     assert "SHELL_CHECKS_OK" in output and "INHERITED_CONFIG_LOADED" not in output, output
-    assert "egg help  /  egg fetch" not in output, output
+    assert "SHELL CONSOLE" not in output, output
     assert not root.exists(), "preview was not cleaned up"
     assert not (fake / "gitconfig").exists(), "preview wrote to inherited Git config"
 
     # A real login shell with redirected stdout stays quiet.
     output = run([preview, "-ic", "print QUIET_OK"], env=dict(env, TERM="xterm-256color"))
-    assert "QUIET_OK" in output and "egg help  /  egg fetch" not in output, output
+    assert "QUIET_OK" in output and "SHELL CONSOLE" not in output, output
     output = run([preview, "-c", "exit 7"], env=env, success=False)
     assert not root.exists(), "failed child left a stale lock"
 

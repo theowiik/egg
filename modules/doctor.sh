@@ -9,7 +9,7 @@ else
   fail "repository missing: $dir (set EGG_DIR)"
 fi
 
-for tool in zsh starship fastfetch fzf fd bat zoxide hx git home-manager; do
+for tool in zsh starship fzf fd bat eza hx git home-manager; do
   if command -v "$tool" >/dev/null 2>&1; then
     ok "$tool"
   else
@@ -18,7 +18,7 @@ for tool in zsh starship fastfetch fzf fd bat zoxide hx git home-manager; do
 done
 
 config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
-for file in zsh/.zshrc starship.toml fastfetch/config.jsonc; do
+for file in zsh/.zshrc starship.toml; do
   if [ -r "$config_home/$file" ]; then
     ok "$file"
   else

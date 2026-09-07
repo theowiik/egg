@@ -1,4 +1,6 @@
-# Jumping around: fzf, zoxide, direnv. All wired into zsh by home-manager.
+# fzf: fuzzy history (ctrl-r), file paths (ctrl-t) and directories (alt-c),
+# plus the handful of shell functions built on it. Wired into zsh by
+# home-manager; the widgets shell out to fd and eza.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
@@ -44,16 +46,6 @@ in
     };
   };
 
-  # `z foo` jumps to the most-used directory matching foo.
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  # Per-project environments via .envrc; nix-direnv caches the dev shell.
-  programs.direnv = {
-    enable = true;
-    enableZshIntegration = true;
-    nix-direnv.enable = true;
-  };
+  # mkcd, ff and c — new commands, none of them shadowing a standard one.
+  programs.zsh.initContent = lib.mkOrder 1000 (builtins.readFile ./helpers.zsh);
 }

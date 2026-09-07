@@ -10,11 +10,10 @@
     ./aliases.nix
     ./eza.nix
     ./editor.nix
-    ./tui.nix
     ./help.nix
     ./git.nix
     ./prompt.nix
-    ./fetch.nix
+    ./welcome.nix
     ./navigation.nix
   ];
 }

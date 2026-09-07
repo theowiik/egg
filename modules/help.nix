@@ -61,7 +61,6 @@ let
     ${metaRow "egg keys" "keybindings"}
     ${metaRow "egg doctor" "check tools, config, activation and Git identity"}
     ${metaRow "hms / hmn" "apply configuration / read Home Manager news"}
-    ${metaRow "egg fetch" "live system dashboard (accepts fastfetch flags)"}
     ${metaRow "egg edit" "open the config in $EDITOR"}
   '';
 
@@ -89,15 +88,9 @@ let
 
     ${head}Navigation${reset}
     ${row "c [dir]" "browse directories below here or a given path"}
-    ${row "zi <part>" "pick from frequently visited directories"}
     ${row "cd -" "return to the previous directory"}
-    ${row "z <part>" "jump to a frequently used directory"}
     ${row "mkcd <dir>" "make a directory and enter it"}
-    ${row "up [n]" "climb n directories"}
     ${row "ff [pat]" "fuzzy-find a file and open it in the editor"}
-    ${row "yy" "file manager, exits into the directory you left off in"}
-    ${row "nsh <pkg>" "temporary shell with a nixpkgs package"}
-    ${row "nrun <pkg>" "run a nixpkgs package"}
   '';
 
   helpFile = pkgs.writeText "egg-help" helpText;
@@ -133,13 +126,6 @@ let
           ;;
         keys)
           show ${keysFile}
-          ;;
-        fetch)
-          shift
-          if [ ! -t 1 ]; then
-            exec ${pkgs.fastfetch}/bin/fastfetch --logo none --key-width 0 "$@"
-          fi
-          exec ${pkgs.fastfetch}/bin/fastfetch "$@"
           ;;
         doctor)
           ${builtins.readFile ./doctor.sh}

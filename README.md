@@ -1,8 +1,12 @@
 # 🥚 egg
 
-A zsh environment defined in Nix: one prompt, one set of aliases, and about 40
+A small zsh environment defined in Nix: a prompt, fuzzy finding, and ten
 terminal tools, reproduced identically on every machine you put it on. Runs on
 Linux and Apple Silicon macOS.
+
+It stays out of the way of the shell you already know. No standard command is
+aliased to something else, so what you learn here is plain zsh, plain git and
+plain coreutils.
 
 Everything is Home Manager configuration in this repository. There are no
 dotfile symlink scripts and no `curl | sh`. Try it in a throwaway home first,
@@ -56,7 +60,6 @@ file or export `EGG_DIR`, so `egg switch` and `egg edit` find the repository.
 | `egg aliases` | every alias, generated from the config |
 | `egg keys` | keybindings |
 | `egg doctor` | check tools, config, activation and Git identity |
-| `egg fetch` | system dashboard (passes flags to fastfetch) |
 | `egg edit` | open this repository in `$EDITOR` |
 | `hms` / `hmn` | apply configuration changes / read Home Manager news |
 
@@ -65,110 +68,39 @@ file or export `EGG_DIR`, so `egg switch` and `egg edit` find the repository.
 | Command | What it does |
 |---|---|
 | `c [dir]` | pick a directory with a tree preview, starting here or at `dir` |
-| `z name` | jump to a directory you have visited; `zi` opens a picker |
-| `..` / `...` | go up one or two levels; `cd -` goes back |
 | `mkcd dir` | make a directory and enter it |
 | `ff [pat]` | fuzzy find a file and open it in the editor |
-| `Ctrl+R` | search shell history |
+| `cd ..`, `cd -` | go up, go back; `AUTO_CD` means `foo/` alone works too |
+| `Ctrl+R` | fuzzy search shell history |
 | `Ctrl+T` | insert a file path |
 | `Alt+C` | change into a directory |
 | `Tab` | completion menu, arrows to pick |
 
-Typing a command that has a shorter alias prints a one line tip afterwards, so
-`git status --short --branch` suggests `gs`. The command still runs. Set
-`EGG_NO_ALIAS_TIPS=1` in `~/.zshrc.local` to turn tips off.
+The only shell aliases are `hms` and `hmn`, which apply the configuration and
+show Home Manager news. Run `egg aliases` to see them.
 
 ## The tools
 
-All of these are installed and on `$PATH`. `egg help` prints the same list with
-current descriptions.
-
-### Shell
+Ten tools, all installed and on `$PATH`. Nothing here is aliased over a
+standard command, so `ls`, `cat`, `ps` and `grep` still run the real thing.
+`egg help` prints the same list with current descriptions.
 
 | Tool | What it does |
 |---|---|
-| `eza` | ls with git status and a tree view |
+| `eza` | ls with git status and a tree view, run as `eza` |
 | `bat` | cat with syntax highlighting, and colour in man pages |
-| `fzf` | fuzzy finder behind the history and file pickers |
-| `zoxide` | `z foo` jumps to the directory you use most matching foo |
+| `fzf` | fuzzy finder behind history, file and directory pickers |
 | `starship` | the prompt |
-| `direnv` | per project environment from `.envrc`, applied on cd |
-| `carapace` | completions for the many CLIs that ship none |
-| `zellij` | terminal multiplexer: panes, tabs, sessions |
-
-### Files and search
-
-| Tool | What it does |
-|---|---|
-| `fd` | find, but fast and aware of `.gitignore` |
+| `fd` | find, but fast and aware of `.gitignore`; backs the fzf widgets |
 | `rg` | recursive grep, fast |
-| `sd` | sed for humans: `sd before after file` |
-| `yy` | yazi file manager; exits into the directory you left off in |
-| `ouch` | compress and extract without remembering tar flags |
-| `tree` | directory tree |
-| `dust` | what is eating the disk |
-| `duf` | df with readable output |
-
-### Git
-
-| Tool | What it does |
-|---|---|
-| `git` | configured with delta diffs and aliases (`git lg`, `git st`) |
-| `lazygit` | full screen git UI: stage hunks, rebase, cherry pick |
-| `gh` | GitHub CLI: PRs, issues, releases |
-| `difft` | structural diff that understands syntax |
-
-### Editor
-
-| Tool | What it does |
-|---|---|
+| `git` | configured with delta diffs and a few log aliases |
 | `hx` | helix: modal editor, LSP built in, no config needed |
-
-### Data
-
-| Tool | What it does |
-|---|---|
-| `jq` | JSON processor |
-| `yq` | the same for YAML, XML and TOML |
-| `jless` | browse a big JSON file interactively |
-| `glow` | render markdown in the terminal |
-
-### System
-
-| Tool | What it does |
-|---|---|
-| `btop` | process and resource monitor |
-| `procs` | ps with colour and search |
-| `fastfetch` | system dashboard, also `egg fetch` |
-| `hyperfine` | benchmark a command properly, with warmup and stats |
-| `watchexec` | rerun a command when files change |
-
-### Network
-
-| Tool | What it does |
-|---|---|
-| `xh` | HTTP requests without curl's flag soup |
-| `doggo` | dig with readable output |
-| `gping` | ping, plotted over time |
 | `curl` | still the one for scripts |
 | `wget` | download a file |
 
-### Dev
-
-| Tool | What it does |
-|---|---|
-| `just` | project command runner; reads a `justfile` |
-| `tokei` | count lines of code by language |
-| `tldr` | practical examples instead of a man page |
-| `unzip` | because something always needs it |
-
-### Per platform
-
-| Tool | What it does |
-|---|---|
-| `xclip` | Linux: clipboard from the terminal |
-| `trash-put` | Linux: rm that you can undo |
-| `g<tool>` | macOS: GNU coreutils, since macOS ships ancient BSD ones |
+The list is meant to grow slowly. Add a tool as one entry in `egg.toolbox` in
+`modules/packages.nix` when you find yourself wanting it, or per machine
+through `egg.extraPackages` in your host file.
 
 ## Layout
 
