@@ -1,12 +1,12 @@
 # 🥚 egg
 
 A zsh environment defined in Nix: one prompt, one set of aliases, and about 40
-command-line tools, reproduced identically on every machine you put it on.
-Runs on Linux and Apple Silicon macOS.
+terminal tools, reproduced identically on every machine you put it on. Runs on
+Linux and Apple Silicon macOS.
 
-Everything is Home Manager configuration in this repository — no dotfile
-symlink scripts, no `curl | sh`. Try it in a throwaway home first; adopt it when
-you like it.
+Everything is Home Manager configuration in this repository. There are no
+dotfile symlink scripts and no `curl | sh`. Try it in a throwaway home first,
+then adopt it when you like it.
 
 ## Try it
 
@@ -51,7 +51,7 @@ file or export `EGG_DIR`, so `egg switch` and `egg edit` find the repository.
 ## The `egg` command
 
 | Command | What it does |
-| --- | --- |
+|---|---|
 | `egg help` | every tool below, with one line each |
 | `egg aliases` | every alias, generated from the config |
 | `egg keys` | keybindings |
@@ -62,13 +62,19 @@ file or export `EGG_DIR`, so `egg switch` and `egg edit` find the repository.
 
 ## Moving around
 
-- `c` — pick a directory with a tree preview; `c ~/git` starts there instead.
-- `z name` jumps to a directory you have visited; `zi` opens a picker.
-- `..` / `...` go up one or two levels; `cd -` goes back.
-- `mkcd dir` makes a directory and enters it. `ff pat` opens a file in the editor.
-- **Ctrl-R** history, **Ctrl-T** file path, **Alt-C** directory, **Tab** completion menu.
+| Command | What it does |
+|---|---|
+| `c [dir]` | pick a directory with a tree preview, starting here or at `dir` |
+| `z name` | jump to a directory you have visited; `zi` opens a picker |
+| `..` / `...` | go up one or two levels; `cd -` goes back |
+| `mkcd dir` | make a directory and enter it |
+| `ff [pat]` | fuzzy find a file and open it in the editor |
+| `Ctrl+R` | search shell history |
+| `Ctrl+T` | insert a file path |
+| `Alt+C` | change into a directory |
+| `Tab` | completion menu, arrows to pick |
 
-Typing a command that has a shorter alias prints a one-line tip afterwards —
+Typing a command that has a shorter alias prints a one line tip afterwards, so
 `git status --short --branch` suggests `gs`. The command still runs. Set
 `EGG_NO_ALIAS_TIPS=1` in `~/.zshrc.local` to turn tips off.
 
@@ -77,47 +83,103 @@ Typing a command that has a shorter alias prints a one-line tip afterwards —
 All of these are installed and on `$PATH`. `egg help` prints the same list with
 current descriptions.
 
-**Shell** — `eza` (ls with git status and tree view), `bat` (cat with
-highlighting), `fzf` (fuzzy finder), `zoxide` (`z` jumping), `starship`
-(prompt), `direnv` (per-project env from `.envrc`), `carapace` (completions for
-CLIs that ship none), `zellij` (panes, tabs, sessions).
+### Shell
 
-**Files & search** — `fd` (fast, gitignore-aware find), `rg` (ripgrep), `sd`
-(`sd before after file`), `yy` (yazi, exits into the directory you left off in),
-`ouch` (compress/extract without tar flags), `tree`, `dust` (what is eating the
-disk), `duf` (readable `df`).
+| Tool | What it does |
+|---|---|
+| `eza` | ls with git status and a tree view |
+| `bat` | cat with syntax highlighting, and colour in man pages |
+| `fzf` | fuzzy finder behind the history and file pickers |
+| `zoxide` | `z foo` jumps to the directory you use most matching foo |
+| `starship` | the prompt |
+| `direnv` | per project environment from `.envrc`, applied on cd |
+| `carapace` | completions for the many CLIs that ship none |
+| `zellij` | terminal multiplexer: panes, tabs, sessions |
 
-**Git** — `git` (delta diffs, `git lg`, `git st`), `lazygit` (stage hunks,
-rebase, cherry-pick), `gh` (GitHub CLI), `difft` (diff that understands syntax).
+### Files and search
 
-**Editor** — `hx` (helix; modal, LSP built in, no config needed).
+| Tool | What it does |
+|---|---|
+| `fd` | find, but fast and aware of `.gitignore` |
+| `rg` | recursive grep, fast |
+| `sd` | sed for humans: `sd before after file` |
+| `yy` | yazi file manager; exits into the directory you left off in |
+| `ouch` | compress and extract without remembering tar flags |
+| `tree` | directory tree |
+| `dust` | what is eating the disk |
+| `duf` | df with readable output |
 
-**Data** — `jq` (JSON), `yq` (YAML, XML, TOML), `jless` (browse big JSON),
-`glow` (render markdown).
+### Git
 
-**System** — `btop` (processes and resources), `procs` (`ps` with colour and
-search), `fastfetch` (system dashboard), `hyperfine` (benchmark a command with
-warmup and stats), `watchexec` (re-run on file change).
+| Tool | What it does |
+|---|---|
+| `git` | configured with delta diffs and aliases (`git lg`, `git st`) |
+| `lazygit` | full screen git UI: stage hunks, rebase, cherry pick |
+| `gh` | GitHub CLI: PRs, issues, releases |
+| `difft` | structural diff that understands syntax |
 
-**Network** — `xh` (HTTP without curl's flag soup), `doggo` (readable `dig`),
-`gping` (ping plotted over time), `curl`, `wget`.
+### Editor
 
-**Dev** — `just` (command runner reading a `justfile`), `tokei` (count lines by
-language), `tldr` (examples instead of a man page), `unzip`.
+| Tool | What it does |
+|---|---|
+| `hx` | helix: modal editor, LSP built in, no config needed |
 
-**Linux only** — `xclip` (clipboard), `trash-put` (`rm` you can undo).
-**macOS only** — GNU coreutils under `g` prefixes, since macOS ships old BSD ones.
+### Data
+
+| Tool | What it does |
+|---|---|
+| `jq` | JSON processor |
+| `yq` | the same for YAML, XML and TOML |
+| `jless` | browse a big JSON file interactively |
+| `glow` | render markdown in the terminal |
+
+### System
+
+| Tool | What it does |
+|---|---|
+| `btop` | process and resource monitor |
+| `procs` | ps with colour and search |
+| `fastfetch` | system dashboard, also `egg fetch` |
+| `hyperfine` | benchmark a command properly, with warmup and stats |
+| `watchexec` | rerun a command when files change |
+
+### Network
+
+| Tool | What it does |
+|---|---|
+| `xh` | HTTP requests without curl's flag soup |
+| `doggo` | dig with readable output |
+| `gping` | ping, plotted over time |
+| `curl` | still the one for scripts |
+| `wget` | download a file |
+
+### Dev
+
+| Tool | What it does |
+|---|---|
+| `just` | project command runner; reads a `justfile` |
+| `tokei` | count lines of code by language |
+| `tldr` | practical examples instead of a man page |
+| `unzip` | because something always needs it |
+
+### Per platform
+
+| Tool | What it does |
+|---|---|
+| `xclip` | Linux: clipboard from the terminal |
+| `trash-put` | Linux: rm that you can undo |
+| `g<tool>` | macOS: GNU coreutils, since macOS ships ancient BSD ones |
 
 ## Layout
 
 ```
-flake.nix          machines, plus `nix run .#try` and `.#install`
-home.nix           what every machine gets
-hosts/*.nix        per-machine settings (Git identity, extra packages)
-modules/*.nix      the shared configuration, one file per concern
+flake.nix            machines, plus `nix run .#try` and `.#install`
+home.nix             what every machine gets
+hosts/*.nix          per machine settings (Git identity, extra packages)
+modules/*.nix        the shared configuration, one file per concern
 modules/options.nix  the `egg.*` options hosts set
-lib/palette.nix    the colours everything else reads
-tests/             smoke tests run by `nix flake check`
+lib/palette.nix      the colours everything else reads
+tests/               smoke tests run by `nix flake check`
 ```
 
 `egg.toolbox` in `modules/packages.nix` is one list that both installs the
@@ -129,10 +191,10 @@ one entry.
 ```sh
 nix run .#try         # try the change in a temporary home
 nix flake check       # smoke tests
-nix fmt               # nixfmt; must leave no diff
+nix fmt               # nixfmt, must leave no diff
 nix run .#install     # apply it for real
 ```
 
 New modules go in `modules/` and must be listed in `modules/default.nix`.
-Builds are expected to be warning-free — a `trace: warning: ... has been
-renamed` from Home Manager means the option needs migrating.
+Builds are expected to be free of warnings. A Home Manager
+`trace: warning: ... has been renamed` means the option needs migrating.
