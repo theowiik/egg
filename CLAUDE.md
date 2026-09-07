@@ -67,10 +67,10 @@ New modules go in `modules/` **and** must be listed in `modules/default.nix`.
 ### The toolbox is one list, and it is deliberately short
 
 The toolbox was trimmed to ten core tools on purpose: eza, bat, fzf, starship,
-fd, rg, git, hx, curl, wget. Nothing is aliased over a standard command — `ls`,
-`cat`, `du`, `ps` and `grep` are the real ones — because the point is to learn
-the originals. Don't reintroduce replacement aliases or add tools speculatively;
-add one when it is actually wanted.
+fd, rg, git, hx, curl, wget. `ls` is the one standard command that is aliased
+away (to eza, in `modules/eza.nix`); `cat`, `du`, `ps` and `grep` are the real
+ones, because the point is to learn the originals. Don't reintroduce further
+replacement aliases or add tools speculatively; add one when it is wanted.
 
 `egg.toolbox` in `modules/packages.nix` is the single source of truth: it
 installs the packages *and* renders `egg help` (`modules/help.nix`). Adding
@@ -95,8 +95,10 @@ Completions come from the packages themselves: each installs `_eza`, `_fd`, `_rg
 ### Two subtleties worth not re-discovering
 
 `programs.eza.enableZshIntegration = false` only suppresses home-manager's own
-`ls`/`ll`/`la` aliases — the `eza = "eza <options>"` alias is emitted regardless,
-and that alias is what carries `--git`/`--icons`/`--header` when you type `eza`.
+`ls`/`ll`/`la` aliases — the `eza = "eza <options>"` alias is emitted regardless.
+Our `ls = "eza"` in `modules/eza.nix` inherits `--git`/`--icons`/`--header`
+through zsh expanding the alias twice. Removing either alias silently drops the
+options.
 
 `nix run .#try` uses a **fixed** home (`/tmp/egg-preview/home`) because
 home-manager embeds absolute paths. The launcher atomically creates the parent

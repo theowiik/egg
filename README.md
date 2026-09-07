@@ -4,9 +4,9 @@ A small zsh environment defined in Nix: a prompt, fuzzy finding, and ten
 terminal tools, reproduced identically on every machine you put it on. Runs on
 Linux and Apple Silicon macOS.
 
-It stays out of the way of the shell you already know. No standard command is
-aliased to something else, so what you learn here is plain zsh, plain git and
-plain coreutils.
+It stays out of the way of the shell you already know. Apart from `ls`, which
+runs eza, no standard command is aliased to something else, so what you learn
+here is plain zsh, plain git and plain coreutils.
 
 Everything is Home Manager configuration in this repository. There are no
 dotfile symlink scripts and no `curl | sh`. Try it in a throwaway home first,
@@ -76,18 +76,18 @@ file or export `EGG_DIR`, so `egg switch` and `egg edit` find the repository.
 | `Alt+C` | change into a directory |
 | `Tab` | completion menu, arrows to pick |
 
-The only shell aliases are `hms` and `hmn`, which apply the configuration and
-show Home Manager news. Run `egg aliases` to see them.
+The only shell aliases are `ls`, plus `hms` and `hmn` for applying the
+configuration and reading Home Manager news. Run `egg aliases` to see them.
 
 ## The tools
 
-Ten tools, all installed and on `$PATH`. Nothing here is aliased over a
-standard command, so `ls`, `cat`, `ps` and `grep` still run the real thing.
-`egg help` prints the same list with current descriptions.
+Ten tools, all installed and on `$PATH`. Only `ls` is aliased over a standard
+command; `cat`, `du`, `ps` and `grep` still run the real thing. `egg help`
+prints the same list with current descriptions.
 
 | Tool | What it does |
 |---|---|
-| `eza` | ls with git status and a tree view, run as `eza` |
+| `eza` | ls with git status, icons and a tree view; `ls` is aliased to it |
 | `bat` | cat with syntax highlighting, and colour in man pages |
 | `fzf` | fuzzy finder behind history, file and directory pickers |
 | `starship` | the prompt |

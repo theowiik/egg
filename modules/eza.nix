@@ -1,5 +1,5 @@
-# eza — a better ls, invoked as `eza`. Deliberately not aliased over `ls`:
-# the real ls stays the real ls.
+# eza — a better ls, aliased over `ls`. This is the one standard command
+# egg does replace; everything else (cat, du, ps, grep) stays untouched.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).ansi;
@@ -15,6 +15,7 @@ in
     enable = true;
     # home-manager's own ls/ll/la/lt aliases stay off; the `eza = "eza
     # <options>"` alias it emits regardless is what carries the options below.
+    # `ls = "eza"` then picks them up, because zsh expands aliases twice.
     enableZshIntegration = false;
 
     git = true; # show git status per file
@@ -25,6 +26,9 @@ in
       "--time-style=long-iso"
     ];
   };
+
+  # Only this one alias: `ls` gets eza's icons, git status and header.
+  home.shellAliases.ls = "eza";
 
   programs.zsh.initContent = lib.mkOrder 1600 ''
     # Refresh colors in new shells even when the parent has old session vars.

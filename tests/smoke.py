@@ -43,8 +43,10 @@ with tempfile.TemporaryDirectory() as temp:
       [[ $PWD = "$HOME/a directory/child" && $PATH = $original_path ]]
       cd "$HOME"
       if mkcd; then exit 21; fi
-      # Standard commands are the standard commands, not aliases over them.
-      for standard in ls cat du ps grep rm cp mv; do
+      # ls is eza, and inherits its options through a second alias expansion.
+      [[ ${aliases[ls]} = eza && ${aliases[eza]} = eza\ * && ${aliases[eza]} = *--icons* ]]
+      # Every other standard command is still the standard command.
+      for standard in cat du ps grep rm cp mv; do
         [[ -z ${aliases[$standard]:-} ]]
       done
       mkdir "$HOME/stubs"
