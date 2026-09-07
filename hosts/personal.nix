@@ -1,11 +1,11 @@
 # Personal machine.
 { ... }:
 {
-  lazyshell = {
+  egg = {
     profile = "personal";
     git.userEmail = "you@example.com";
   };
 
   # Packages only this machine needs.
-  # lazyshell.extraPackages = with pkgs; [ ffmpeg yt-dlp ];
+  # egg.extraPackages = with pkgs; [ ffmpeg yt-dlp ];
 }

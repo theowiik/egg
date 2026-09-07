@@ -1,5 +1,5 @@
 {
-  description = "lazyshell — a portable, Nix-managed shell environment (zsh + eza + friends)";
+  description = "egg — a portable, Nix-managed shell environment (zsh + eza + friends)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -63,12 +63,12 @@
 
       # Home Manager embeds HOME in generated files, so the preview path is
       # fixed. Its parent is an atomic lock, owned and removed by the launcher.
-      previewRoot = "/tmp/lazyshell-preview";
+      previewRoot = "/tmp/egg-preview";
       previewHome =
         system: root:
         mkHome {
           inherit system;
-          username = "lazyshell";
+          username = "egg";
           host = "personal";
           homeDirectory = "${root}/home";
         };
@@ -87,17 +87,17 @@
           pkgs = pkgsFor system;
         in
         pkgs.writeShellApplication {
-          name = "lazyshell-install";
+          name = "egg-install";
           runtimeInputs = [ home-manager.packages.${system}.home-manager ];
           text = ''
             if [[ "''${1:-}" = --help || "''${1:-}" = -h ]]; then
               echo 'Usage: nix run .#install -- [Home Manager switch options]'
-              echo 'Uses the current directory, or LAZYSHELL_DIR, as the configuration.'
+              echo 'Uses the current directory, or EGG_DIR, as the configuration.'
               exit 0
             fi
-            dir="''${LAZYSHELL_DIR:-$PWD}"
+            dir="''${EGG_DIR:-$PWD}"
             if [ ! -f "$dir/flake.nix" ]; then
-              echo "lazyshell: no flake.nix in $dir; run from the repository or set LAZYSHELL_DIR" >&2
+              echo "egg: no flake.nix in $dir; run from the repository or set EGG_DIR" >&2
               exit 1
             fi
             exec home-manager switch -b backup --flake "$dir" "$@"
@@ -132,13 +132,13 @@
       apps = forAllSystems (system: {
         install = {
           type = "app";
-          program = "${mkInstall system}/bin/lazyshell-install";
-          meta.description = "Install lazyshell with the pinned Home Manager";
+          program = "${mkInstall system}/bin/egg-install";
+          meta.description = "Install egg with the pinned Home Manager";
         };
         try = {
           type = "app";
-          program = "${mkTry system}/bin/lazyshell-try";
-          meta.description = "Preview lazyshell in a temporary home directory";
+          program = "${mkTry system}/bin/egg-try";
+          meta.description = "Preview egg in a temporary home directory";
         };
       });
 
@@ -168,7 +168,7 @@
         system:
         let
           pkgs = pkgsFor system;
-          testRoot = "/tmp/lazyshell-smoke-preview";
+          testRoot = "/tmp/egg-smoke-preview";
           home = previewHome system testRoot;
         in
         {

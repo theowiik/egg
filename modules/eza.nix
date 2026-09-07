@@ -1,6 +1,15 @@
 # eza — the ls replacement, plus the aliases that make it the default.
 { lib, pkgs, ... }:
+let
+  colors = (import ../lib/palette.nix { inherit lib; }).ansi;
+  fileColors = "di=1;${colors.dir}:ln=${colors.nix}:ex=${colors.git}:or=${colors.err}";
+in
 {
+  home.sessionVariables = {
+    LS_COLORS = fileColors;
+    EZA_COLORS = fileColors;
+  };
+
   programs.eza = {
     enable = true;
     # false only suppresses home-manager's own ls/ll/la/lt set — the
@@ -29,13 +38,16 @@
   };
 
   programs.zsh.initContent = lib.mkOrder 1600 ''
+    # Refresh colors in new shells even when the parent has old session vars.
+    export LS_COLORS=${lib.escapeShellArg fileColors}
+    export EZA_COLORS=${lib.escapeShellArg fileColors}
     autoload -Uz add-zsh-hook
-    _lazyshell_list_directory() {
+    _egg_list_directory() {
       # Keep command substitutions, scripts and redirected commands quiet.
-      # Set LAZYSHELL_NO_AUTO_LS=1 in ~/.zshrc.local to disable automatic listings.
-      [[ -o interactive && -t 1 && $ZSH_SUBSHELL -eq 0 && -z "''${LAZYSHELL_NO_AUTO_LS:-}" ]] || return 0
+      # Set EGG_NO_AUTO_LS=1 in ~/.zshrc.local to disable automatic listings.
+      [[ -o interactive && -t 1 && $ZSH_SUBSHELL -eq 0 && -z "''${EGG_NO_AUTO_LS:-}" ]] || return 0
       ${pkgs.eza}/bin/eza --grid --group-directories-first --icons=auto --color=auto || true
     }
-    add-zsh-hook chpwd _lazyshell_list_directory
+    add-zsh-hook chpwd _egg_list_directory
   '';
 }

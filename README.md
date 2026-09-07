@@ -1,7 +1,7 @@
-# lazyshell
+# 🥚 egg
 
-A ready-to-use zsh setup with a polished prompt, live clock, automatic directory
-listings, and a compact ASCII welcome. For Linux and Apple Silicon macOS.
+A ready-to-use zsh setup with playful cyan, lavender, pink, and mint colors,
+a clean egg prompt, live clock, and framed file pickers. For Linux and Apple Silicon macOS.
 
 ## Get started
 
@@ -32,22 +32,37 @@ username and hostname with your own:
 ```
 
 Set your Git name and email in `hosts/personal.nix` using
-`lazyshell.git.userName` and `lazyshell.git.userEmail`. Then activate and start zsh:
+`egg.git.userName` and `egg.git.userEmail`. Then activate and start zsh:
 
 ```sh
 nix run .#install
 exec ~/.nix-profile/bin/zsh -l
 ```
 
+## Moving around
+
+- `c` — fuzzy-pick a directory with a tree preview; `c ~/git` starts in your projects.
+- `z name` — jump to a directory you have visited; `zi` opens a history picker.
+- `cd -` — go back; `..` / `...` — go up one / two levels.
+- **Alt-C** — directory picker; **Ctrl-T** — insert a file path.
+- **Tab** — complete paths, then use arrow keys to choose.
+
+Typing a command with a shorter alias shows a quiet tip, for example
+`git status --short --branch` → `gs`. Your command still runs normally.
+Set `EGG_NO_ALIAS_TIPS=1` in `~/.zshrc.local` to hide tips.
+
 ## Everyday commands
 
 ```sh
-lazyshell help     # discover the tools
-lazyshell keys     # keyboard shortcuts
-lazyshell fetch    # system dashboard
-lazyshell doctor   # check the setup
-hms               # apply config changes
+egg help     # discover the tools
+egg keys     # keyboard shortcuts
+egg fetch    # system dashboard
+egg doctor   # check the setup
+hms          # apply config changes
 ```
 
-Cloned elsewhere? Set `lazyshell.directory` in your host config, or export
-`LAZYSHELL_DIR`. Run `nix flake check` to test changes before applying them.
+Cloned elsewhere? Set `egg.directory` in your host config, or export
+`EGG_DIR`. Run `nix flake check` to test changes before applying them.
+
+The repository is still named `lazyshell` for now. After renaming or moving it,
+set `egg.directory` or `EGG_DIR` to the new checkout path.

@@ -1,7 +1,7 @@
 # Work machine. Different identity, different extra tooling.
 { pkgs, ... }:
 {
-  lazyshell = {
+  egg = {
     profile = "work";
     git.userEmail = "theo.wiik@example-corp.com"; # <- set your work address
 

@@ -1,12 +1,11 @@
-# A compact two-line prompt: lavender identity badge, slate directory segment,
-# and quiet status separators. Plain Unicode; no patched font required.
+# Airy prompt: an egg, a lavender path, and quiet mint Git context.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
 in
 {
   programs.zsh.initContent = lib.mkOrder 1700 (
-    lib.replaceStrings [ "@clockColor@" ] [ colors.muted ] (builtins.readFile ./clock.zsh)
+    lib.replaceStrings [ "@clockColor@" ] [ colors.cyan ] (builtins.readFile ./clock.zsh)
   );
 
   programs.starship = {
@@ -16,24 +15,21 @@ in
     settings = {
       add_newline = true;
       command_timeout = 1000;
-      palette = "lazyshell";
+      palette = "egg";
 
-      palettes.lazyshell = colors;
+      palettes.egg = colors;
 
       format = lib.concatStrings [
-        "[ lazyshell ](bold fg:surface bg:brand)"
+        "[🥚 ](brand)"
         "$directory"
         "$username"
         "$hostname"
-        "$git_branch"
-        "$git_status"
-        "$git_state"
+        "([  · ](muted)$git_branch$git_status$git_state)"
         "$nix_shell"
         "$cmd_duration"
         "$jobs"
         "$status"
         "$line_break"
-        " "
         "$character"
       ];
 
@@ -60,17 +56,17 @@ in
       };
 
       directory = {
-        format = "[ $path ]($style)[$read_only]($read_only_style)";
-        style = "bold fg:dir bg:surface";
-        truncation_length = 3;
+        format = "[$path]($style)[$read_only]($read_only_style)";
+        style = "bold nix";
+        truncation_length = 5;
         truncation_symbol = "…/";
         truncate_to_repo = false;
         read_only = " ro ";
-        read_only_style = "bold fg:err bg:surface";
+        read_only_style = "bold err";
       };
 
       git_branch = {
-        format = "[ · ](frame)[$branch]($style)";
+        format = "[$branch]($style)";
         style = "bold git";
       };
 
@@ -106,14 +102,14 @@ in
       };
 
       character = {
-        success_symbol = "[❯](bold brand)";
+        success_symbol = "[❯](bold pink)";
         error_symbol = "[❯](bold err)";
         vimcmd_symbol = "[❮](bold git)";
       };
 
       time = {
         disabled = false;
-        format = "[$time ](muted)";
+        format = "[$time ](cyan)";
         time_format = "%H:%M";
       };
     };

@@ -43,7 +43,7 @@
         setopt GLOB_DOTS            # globs match dotfiles
         setopt INTERACTIVE_COMMENTS # allow `# comments` when typing
         setopt NO_BEEP
-        setopt CORRECT              # offer to fix typo'd command names
+        unsetopt CORRECT            # completion helpers are not executable commands
 
         # --- keybindings ---------------------------------------------------
         bindkey -e                  # emacs bindings; swap for `bindkey -v`
@@ -61,10 +61,10 @@
         bindkey '^ ' autosuggest-accept
 
         # --- terminal title -------------------------------------------------
-        # So the tab says lazyshell too, not just the prompt.
+        # So the tab says egg too, not just the prompt.
         autoload -Uz add-zsh-hook
-        _lazyshell_title() { print -Pn "\e]0;lazyshell: %~\a"; }
-        add-zsh-hook precmd _lazyshell_title
+        _egg_title() { print -Pn "\e]0;🥚 egg: %~\a"; }
+        add-zsh-hook precmd _egg_title
 
         # --- machine-local escape hatch ------------------------------------
         # Anything secret or one-off (work proxies, tokens) goes here and is

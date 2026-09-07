@@ -3,9 +3,9 @@
 # The nix installer normally does this by appending a snippet to the user's
 # hand-written ~/.zshrc. `programs.zsh.dotDir` moves the real zshrc to
 # ~/.config/zsh, which orphans that ~/.zshrc: the snippet stops running, and
-# with it `nix`, `home-manager` and every `lazyshell.toolbox` tool drop off
+# with it `nix`, `home-manager` and every `egg.toolbox` tool drop off
 # PATH. macOS has no /etc/zshrc nix snippet to fall back on, so the shell ends
-# up with none of its own tools — `lazyshell: command not found`.
+# up with none of its own tools — `egg: command not found`.
 #
 # `home.sessionPath` lands in hm-session-vars.sh, which the generated .zshenv
 # sources for non-login shells and .zprofile for login ones. So scripts and

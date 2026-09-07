@@ -52,9 +52,9 @@ in
     enable = true;
     enableZshIntegration = false;
     settings = {
-      theme = "catppuccin-mocha";
+      theme = "tokyo-night-storm";
       pane_frames = true;
-      ui.pane_frames.rounded_corners = true;
+      ui.pane_frames.rounded_corners = false;
       copy_on_select = true;
       default_layout = "compact";
     };

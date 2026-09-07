@@ -1,6 +1,9 @@
 # Aliases and small shell functions.
 # eza-based ls aliases live next to the eza config in modules/eza.nix.
 { lib, ... }:
+let
+  colors = (import ../lib/palette.nix { inherit lib; }).hex;
+in
 {
   home.shellAliases = {
     # --- safety nets ---
@@ -31,11 +34,15 @@
     gp = "git push";
     gpl = "git pull --rebase";
 
-    # --- nix / lazyshell ---
-    hms = "lazyshell switch";
-    hmn = "lazyshell news";
+    # --- nix / egg ---
+    hms = "egg switch";
+    hmn = "egg news";
     ngc = "nix-collect-garbage -d";
   };
 
-  programs.zsh.initContent = lib.mkOrder 1000 (builtins.readFile ./helpers.zsh);
+  programs.zsh.initContent = lib.mkOrder 1000 (
+    lib.replaceStrings [ "@tipColor@" "@mutedColor@" ] [ colors.brand colors.subtle ] (
+      builtins.readFile ./helpers.zsh
+    )
+  );
 }

@@ -1,8 +1,8 @@
-# The `lazyshell` command — what is installed, what the aliases are, what the
+# The `egg` command — what is installed, what the aliases are, what the
 # keybindings do.
 #
 # Everything here is rendered from config at build time: the tool list comes
-# from `lazyshell.toolbox` (the same list that installs the packages) and the
+# from `egg.toolbox` (the same list that installs the packages) and the
 # alias list from `home.shellAliases`. Neither can drift out of date.
 {
   config,
@@ -35,11 +35,11 @@ let
     width: name: desc:
     "  ${cmd}${pad width name}${reset}${grey}${desc}${reset}";
   row = rowAt 14;
-  # `lazyshell <sub>` names are longer than a tool name, so Meta gets its own
+  # `egg <sub>` names are longer than a tool name, so Meta gets its own
   # column width rather than wrapping every other block in dead space.
   metaRow = rowAt 18;
 
-  tools = config.lazyshell.toolbox;
+  tools = config.egg.toolbox;
   # lib.unique keeps first-seen order, so categories render as authored.
   categories = lib.unique (map (t: t.category) tools);
 
@@ -49,7 +49,7 @@ let
   '';
 
   banner = ''
-    ${brand}  lazyshell${reset}
+    ${brand}  🥚 egg${reset}
     ${grey}  ${toString (builtins.length tools)} tools, nix-managed. Everything below is already installed.${reset}
   '';
 
@@ -57,16 +57,16 @@ let
     ${banner}
     ${lib.concatStringsSep "\n" (map block categories)}
     ${head}Meta${reset}
-    ${metaRow "lazyshell aliases" "every shortcut, generated from the config"}
-    ${metaRow "lazyshell keys" "keybindings"}
-    ${metaRow "lazyshell doctor" "check tools, config, activation and Git identity"}
+    ${metaRow "egg aliases" "every shortcut, generated from the config"}
+    ${metaRow "egg keys" "keybindings"}
+    ${metaRow "egg doctor" "check tools, config, activation and Git identity"}
     ${metaRow "hms / hmn" "apply configuration / read Home Manager news"}
-    ${metaRow "lazyshell fetch" "live system dashboard (accepts fastfetch flags)"}
-    ${metaRow "lazyshell edit" "open the config in $EDITOR"}
+    ${metaRow "egg fetch" "live system dashboard (accepts fastfetch flags)"}
+    ${metaRow "egg edit" "open the config in $EDITOR"}
   '';
 
   aliasesText = ''
-    ${brand}  lazyshell aliases${reset}
+    ${brand}  🥚 egg aliases${reset}
 
     ${lib.concatStringsSep "\n" (
       map (n: row n config.home.shellAliases.${n}) (lib.attrNames config.home.shellAliases)
@@ -74,7 +74,7 @@ let
   '';
 
   keysText = ''
-    ${brand}  lazyshell keybindings${reset}
+    ${brand}  🥚 egg keybindings${reset}
 
     ${head}Finding things${reset}
     ${row "ctrl-r" "fuzzy search shell history"}
@@ -88,6 +88,9 @@ let
     ${row "tab" "completion menu, arrows to pick"}
 
     ${head}Navigation${reset}
+    ${row "c [dir]" "browse directories below here or a given path"}
+    ${row "zi <part>" "pick from frequently visited directories"}
+    ${row "cd -" "return to the previous directory"}
     ${row "z <part>" "jump to a frequently used directory"}
     ${row "mkcd <dir>" "make a directory and enter it"}
     ${row "up [n]" "climb n directories"}
@@ -97,12 +100,12 @@ let
     ${row "nrun <pkg>" "run a nixpkgs package"}
   '';
 
-  helpFile = pkgs.writeText "lazyshell-help" helpText;
-  aliasesFile = pkgs.writeText "lazyshell-aliases" aliasesText;
-  keysFile = pkgs.writeText "lazyshell-keys" keysText;
+  helpFile = pkgs.writeText "egg-help" helpText;
+  aliasesFile = pkgs.writeText "egg-aliases" aliasesText;
+  keysFile = pkgs.writeText "egg-keys" keysText;
 
-  lazyshell = pkgs.writeShellApplication {
-    name = "lazyshell";
+  egg = pkgs.writeShellApplication {
+    name = "egg";
     runtimeInputs = [
       pkgs.less
       pkgs.gnused
@@ -113,13 +116,13 @@ let
         if [ -t 1 ]; then
           less -FRX "$1"
         else
-          # Strip colour when piped, so `lazyshell | grep` behaves.
+          # Strip colour when piped, so `egg | grep` behaves.
           sed 's/\x1b\[[0-9;]*m//g' "$1"
         fi
       }
 
-      dir=${lib.escapeShellArg config.lazyshell.directory}
-      dir="''${LAZYSHELL_DIR:-$dir}"
+      dir=${lib.escapeShellArg config.egg.directory}
+      dir="''${EGG_DIR:-$dir}"
 
       case "''${1:-help}" in
         help | -h | --help)
@@ -150,7 +153,7 @@ let
           cd "$dir" && exec ''${EDITOR:-hx} .
           ;;
         *)
-          printf 'lazyshell: unknown subcommand %s\n\n' "$1" >&2
+          printf 'egg: unknown subcommand %s\n\n' "$1" >&2
           show ${helpFile}
           exit 1
           ;;
@@ -159,5 +162,5 @@ let
   };
 in
 {
-  home.packages = [ lazyshell ];
+  home.packages = [ egg ];
 }

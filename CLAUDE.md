@@ -60,15 +60,15 @@ repo:
   `pkgs.stdenv.hostPlatform.isDarwin/isLinux`.
 - `hosts/*.nix` — per-machine. Anything that differs between work and personal
   belongs here, otherwise `git pull` conflicts between machines.
-- `modules/options.nix` — the `lazyshell.*` option namespace (`profile`,
+- `modules/options.nix` — the `egg.*` option namespace (`profile`,
   `git.userEmail`, `extraPackages`) that hosts set declaratively.
 
 New modules go in `modules/` **and** must be listed in `modules/default.nix`.
 
 ### The toolbox is one list
 
-`lazyshell.toolbox` in `modules/packages.nix` is the single source of truth: it
-installs the packages *and* renders `lazyshell help` (`modules/help.nix`). Adding
+`egg.toolbox` in `modules/packages.nix` is the single source of truth: it
+installs the packages *and* renders `egg help` (`modules/help.nix`). Adding
 a tool means one entry, never two. `package = null` means a `programs.*` module
 already installs it — the entry stays so the tool is still discoverable in help.
 
@@ -95,7 +95,7 @@ Our `ls = "eza"` in `modules/eza.nix` inherits `--git`/`--icons`/`--header`
 through zsh expanding the alias twice. Removing either alias silently drops the
 options.
 
-`nix run .#try` uses a **fixed** home (`/tmp/lazyshell-preview/home`) because
+`nix run .#try` uses a **fixed** home (`/tmp/egg-preview/home`) because
 home-manager embeds absolute paths. The launcher atomically creates the parent
 as a lock, refuses an existing directory, starts with a clean environment, and
 removes its own preview on exit. It is a configuration preview, not a filesystem

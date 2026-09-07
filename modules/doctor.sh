@@ -2,11 +2,11 @@ failures=0
 ok() { printf '  ok    %s\n' "$*"; }
 fail() { printf '  FAIL  %s\n' "$*"; failures=$((failures + 1)); }
 
-printf 'lazyshell doctor\n\n'
+printf 'egg doctor\n\n'
 if [ -f "$dir/flake.nix" ]; then
   ok "repository: $dir"
 else
-  fail "repository missing: $dir (set LAZYSHELL_DIR)"
+  fail "repository missing: $dir (set EGG_DIR)"
 fi
 
 for tool in zsh starship fastfetch fzf fd bat zoxide hx git home-manager; do
@@ -26,7 +26,7 @@ for file in zsh/.zshrc starship.toml fastfetch/config.jsonc; do
   fi
 done
 
-if [ "${LAZYSHELL_PREVIEW:-}" = 1 ]; then
+if [ "${EGG_PREVIEW:-}" = 1 ]; then
   ok "temporary preview (not activated)"
 elif [ -e "${XDG_STATE_HOME:-$HOME/.local/state}/nix/profiles/home-manager" ] ||
      [ -e "/nix/var/nix/profiles/per-user/$(id -un)/home-manager" ]; then
@@ -39,13 +39,13 @@ if command -v git >/dev/null 2>&1; then
   git_name=$(git config --global --get user.name || true)
   git_email=$(git config --global --get user.email || true)
   if [ -z "$git_name" ]; then
-    fail "Git user.name is unset; set lazyshell.git.userName in your host config"
+    fail "Git user.name is unset; set egg.git.userName in your host config"
   else
     ok "Git user.name: $git_name"
   fi
   case "$git_email" in
     ''|*@example.com|*@example-corp.com)
-      fail "Git email is unset or a placeholder; set lazyshell.git.userEmail in your host config"
+      fail "Git email is unset or a placeholder; set egg.git.userEmail in your host config"
       ;;
     *@*) ok "Git user.email: $git_email" ;;
     *) fail "Git user.email needs an email address" ;;

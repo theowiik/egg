@@ -5,11 +5,11 @@
   install,
   previewRoot,
 }:
-pkgs.runCommand "lazyshell-smoke"
+pkgs.runCommand "egg-smoke"
   {
     nativeBuildInputs = [ pkgs.python3 ];
-    PREVIEW = "${preview}/bin/lazyshell-try";
-    INSTALL = "${install}/bin/lazyshell-install";
+    PREVIEW = "${preview}/bin/egg-try";
+    INSTALL = "${install}/bin/egg-install";
     PREVIEW_ROOT = previewRoot;
     INTERACTIVE_TESTS = ./interactive.py;
     PROFILE = "${home.config.home.path}";

@@ -1,7 +1,7 @@
 # The root doubles as an atomic lock. Never delete a directory we did not create.
 preview_root="@previewRoot@"
 if ! mkdir -m 700 -- "$preview_root"; then
-  printf 'lazyshell: preview already running or directory exists: %s\n' "$preview_root" >&2
+  printf 'egg: preview already running or directory exists: %s\n' "$preview_root" >&2
   printf 'Close the other preview. If it crashed, remove that directory before retrying.\n' >&2
   exit 1
 fi
@@ -14,9 +14,9 @@ mkdir -p "$preview_home" "$preview_root/tmp"
 cp -rL --no-preserve=mode "@homeFiles@/." "$preview_home/"
 chmod -R u+w "$preview_home"
 ln -s "@profile@" "$preview_home/.nix-profile"
-repository="${LAZYSHELL_DIR:-$PWD}"
+repository="${EGG_DIR:-$PWD}"
 
-printf 'lazyshell preview — temporary home, removed on exit.\n'
+printf 'egg preview — temporary home, removed on exit.\n'
 printf 'Commands still have normal access to your files. Type exit to leave.\n\n'
 cd "$preview_home"
 
@@ -36,6 +36,6 @@ env -i \
   SHELL="@zsh@" \
   USER="$(id -un)" LOGNAME="$(id -un)" \
   TERM="${TERM:-dumb}" COLORTERM="${COLORTERM:-}" LANG="${LANG:-en_US.UTF-8}" \
-  LAZYSHELL_DIR="$repository" LAZYSHELL_PREVIEW=1 \
-  LAZYSHELL_NO_WELCOME="${LAZYSHELL_NO_WELCOME:-}" \
+  EGG_DIR="$repository" EGG_PREVIEW=1 \
+  EGG_NO_WELCOME="${EGG_NO_WELCOME:-}" \
   "@zsh@" -l "$@"

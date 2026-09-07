@@ -2,11 +2,11 @@
 # instead of copy-pasted blocks of program config.
 { config, lib, ... }:
 {
-  options.lazyshell = {
+  options.egg = {
     directory = lib.mkOption {
       type = lib.types.str;
       default = "${config.home.homeDirectory}/git/lazyshell";
-      description = "Repository path used by rebuild, news and edit commands; LAZYSHELL_DIR overrides it.";
+      description = "Repository path used by rebuild, news and edit commands; EGG_DIR overrides it.";
     };
     profile = lib.mkOption {
       type = lib.types.enum [
@@ -36,7 +36,7 @@
           options = {
             category = lib.mkOption {
               type = lib.types.str;
-              description = "Heading this tool is listed under by `lazyshell help`.";
+              description = "Heading this tool is listed under by `egg help`.";
             };
             cmd = lib.mkOption {
               type = lib.types.str;
@@ -57,7 +57,7 @@
       default = [ ];
       description = ''
         The toolbox. Single source of truth: `modules/packages.nix` installs
-        every entry with a package, and `lazyshell help` lists all of them.
+        every entry with a package, and `egg help` lists all of them.
         Order is preserved, so entries render in the order written.
       '';
     };

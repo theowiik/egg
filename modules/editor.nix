@@ -16,7 +16,7 @@
     ];
 
     settings = {
-      theme = "catppuccin_mocha"; # matches the prompt palette
+      theme = "tokyonight_storm"; # matches the prompt palette
 
       editor = {
         line-number = "relative";

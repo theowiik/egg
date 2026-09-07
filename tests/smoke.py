@@ -29,7 +29,7 @@ with tempfile.TemporaryDirectory() as temp:
                XDG_DATA_HOME=temp, XDG_STATE_HOME=temp, XDG_CACHE_HOME=temp,
                GIT_CONFIG_GLOBAL=str(fake / "gitconfig"), STARSHIP_CONFIG=temp,
                __HM_SESS_VARS_SOURCED="1", __HM_ZSH_SESS_VARS_SOURCED="1",
-               LAZYSHELL_DIR=temp, TERM="dumb")
+               EGG_DIR=temp, TERM="dumb")
 
     shell_checks = r'''
       set -ex
@@ -55,9 +55,9 @@ with tempfile.TemporaryDirectory() as temp:
       printf '#!/bin/sh\nprintf "%%s\\n" "$@" > "$HOME/hm-args"\n' > "$HOME/stubs/home-manager"
       chmod +x "$HOME/stubs/home-manager"
       PATH="$HOME/stubs:$PATH" hms --dry-run
-      [[ $(<"$HOME/hm-args") = $'switch\n--flake\n'$LAZYSHELL_DIR$'\n--dry-run' ]]
+      [[ $(<"$HOME/hm-args") = $'switch\n--flake\n'$EGG_DIR$'\n--dry-run' ]]
       PATH="$HOME/stubs:$PATH" hmn
-      [[ $(<"$HOME/hm-args") = $'news\n--flake\n'$LAZYSHELL_DIR ]]
+      [[ $(<"$HOME/hm-args") = $'news\n--flake\n'$EGG_DIR ]]
       mkdir "$HOME/files"
       cd "$HOME/files"
       target=$'target with\na newline'
@@ -65,35 +65,42 @@ with tempfile.TemporaryDirectory() as temp:
       editor_test() { [[ $1 = --wait && $2 = -- && $3 -ef $target ]]; }
       EDITOR='editor_test --wait' FZF_DEFAULT_OPTS='--filter=target' ff target
       cd "$HOME"
-      lazyshell help > help.txt
-      lazyshell aliases > aliases.txt
-      grep -q 'lazyshell switch' aliases.txt
-      if lazyshell unknown > /dev/null 2>&1; then exit 22; fi
-      lazyshell fetch > fetch.txt
+      mkdir -p "$HOME/navigation/$target"
+      FZF_DEFAULT_OPTS='--filter=target' c "$HOME/navigation"
+      [[ $PWD = "$HOME/navigation/$target" ]]
+      before=$PWD
+      if FZF_DEFAULT_OPTS='--filter=does-not-exist' c; then exit 26; fi
+      [[ $PWD = "$before" ]]
+      cd "$HOME"
+      egg help > help.txt
+      egg aliases > aliases.txt
+      grep -q 'egg switch' aliases.txt
+      if egg unknown > /dev/null 2>&1; then exit 22; fi
+      egg fetch > fetch.txt
       [[ $(<fetch.txt) != *$'\e'* ]]
-      if lazyshell doctor > doctor.txt; then exit 23; fi
+      if egg doctor > doctor.txt; then exit 23; fi
       grep -q 'placeholder' doctor.txt
       git config --global user.name 'Smoke Test'
-      git config --global user.email 'smoke@lazyshell.test'
-      lazyshell doctor
+      git config --global user.email 'smoke@egg.test'
+      egg doctor
       mv "$XDG_CONFIG_HOME/starship.toml" "$HOME/starship.saved"
-      if lazyshell doctor > doctor.txt; then exit 24; fi
+      if egg doctor > doctor.txt; then exit 24; fi
       grep -q 'starship.toml missing' doctor.txt
       mv "$HOME/starship.saved" "$XDG_CONFIG_HOME/starship.toml"
-      if PATH=/nonexistent @PROFILE@/bin/lazyshell doctor > doctor.txt; then exit 25; fi
+      if PATH=/nonexistent @PROFILE@/bin/egg doctor > doctor.txt; then exit 25; fi
       grep -q 'missing from PATH' doctor.txt
       zellij setup --check
       print SHELL_CHECKS_OK
     '''.replace("@PROFILE@", os.environ["PROFILE"]).replace("@PREVIEW_ROOT@", str(root))
     output = run([preview, "-ic", shell_checks], env=env)
     assert "SHELL_CHECKS_OK" in output and "INHERITED_CONFIG_LOADED" not in output, output
-    assert "lazyshell help  /  lazyshell fetch" not in output, output
+    assert "egg help  /  egg fetch" not in output, output
     assert not root.exists(), "preview was not cleaned up"
     assert not (fake / "gitconfig").exists(), "preview wrote to inherited Git config"
 
     # A real login shell with redirected stdout stays quiet.
     output = run([preview, "-ic", "print QUIET_OK"], env=dict(env, TERM="xterm-256color"))
-    assert "QUIET_OK" in output and "lazyshell help  /  lazyshell fetch" not in output, output
+    assert "QUIET_OK" in output and "egg help  /  egg fetch" not in output, output
     output = run([preview, "-c", "exit 7"], env=env, success=False)
     assert not root.exists(), "failed child left a stale lock"
 
@@ -120,9 +127,9 @@ with tempfile.TemporaryDirectory() as temp:
 
     # These install paths never activate a real configuration.
     assert "Usage:" in run([install, "--help"], env=env)
-    output = run([install], env=dict(env, LAZYSHELL_DIR=str(fake / "missing")), success=False)
+    output = run([install], env=dict(env, EGG_DIR=str(fake / "missing")), success=False)
     assert "no flake.nix" in output, output
 
 runpy.run_path(os.environ["INTERACTIVE_TESTS"], run_name="__main__")
 
-print("All lazyshell smoke checks passed")
+print("All egg smoke checks passed")

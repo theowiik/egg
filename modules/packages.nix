@@ -1,4 +1,4 @@
-# The toolbox: what gets installed, and what `lazyshell help` lists.
+# The toolbox: what gets installed, and what `egg help` lists.
 #
 # One list, two consumers — add an entry here and it is both installed and
 # documented. `package = null` means a programs.* module already installs it;
@@ -10,12 +10,12 @@
   ...
 }:
 {
-  lazyshell.toolbox = [
+  egg.toolbox = [
     # --- shell ---------------------------------------------------------
     {
       category = "Shell";
       cmd = "eza";
-      desc = "ls replacement: git status, tree view (see `lazyshell aliases`)";
+      desc = "ls replacement: git status, tree view (see `egg aliases`)";
     }
     {
       category = "Shell";
@@ -175,7 +175,7 @@
       category = "System";
       cmd = "fastfetch";
       package = pkgs.fastfetch;
-      desc = "live system dashboard; also `lazyshell fetch`";
+      desc = "live system dashboard; also `egg fetch`";
     }
     {
       category = "System";
@@ -274,7 +274,7 @@
   # Install everything in the toolbox that isn't already installed by a
   # programs.* module, plus whatever this machine asked for on top.
   home.packages =
-    (lib.remove null (map (t: t.package) config.lazyshell.toolbox)) ++ config.lazyshell.extraPackages;
+    (lib.remove null (map (t: t.package) config.egg.toolbox)) ++ config.egg.extraPackages;
 
   programs.bat = {
     enable = true;

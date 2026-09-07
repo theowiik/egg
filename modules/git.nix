@@ -1,4 +1,4 @@
-# git configuration. Identity comes from lazyshell.git.* so the work machine
+# git configuration. Identity comes from egg.git.* so the work machine
 # can use a different email without touching this file.
 #
 # `programs.git.settings` maps 1:1 onto ~/.config/git/config sections.
@@ -9,8 +9,8 @@
 
     settings = {
       user = {
-        name = config.lazyshell.git.userName;
-        email = config.lazyshell.git.userEmail;
+        name = config.egg.git.userName;
+        email = config.egg.git.userEmail;
       };
 
       alias = {

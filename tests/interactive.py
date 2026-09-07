@@ -15,7 +15,7 @@ clock = re.compile(r"\d{2}:\d{2}:\d{2}")
 
 pid, fd = pty.fork()
 if pid == 0:
-    env = dict(os.environ, TERM="xterm-256color", LAZYSHELL_NO_WELCOME="")
+    env = dict(os.environ, TERM="xterm-256color", EGG_NO_WELCOME="")
     os.execve(os.environ["PREVIEW"], [os.environ["PREVIEW"]], env)
 
 fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", 30, 120, 0, 0))
@@ -49,7 +49,7 @@ try:
     while not clock.search(output) and time.monotonic() < deadline:
         output += read_for(0.2)
     assert clock.search(output), "live prompt did not start: " + output
-    assert "lazyshell help  /  lazyshell fetch" in output, "compact welcome missing: " + output
+    assert "egg help  /  egg fetch" in output, "compact welcome missing: " + output
     assert " tools" in output, "welcome context missing: " + output
     assert not any(label in output for label in ("Memory", "Kernel", "Machine", "CPU")), "startup still displays hardware information: " + output
 
@@ -57,7 +57,7 @@ try:
     assert len(set(clock.findall(output))) >= 2, "clock did not tick while idle: " + output
 
     # Count expensive prompt renders, then leave a partially typed command idle.
-    send('typeset -gi render_count=0; functions[_lazyshell_clock_cache]="(( ++render_count )); ${functions[_lazyshell_clock_cache]}"\n')
+    send('typeset -gi render_count=0; functions[_egg_clock_cache]="(( ++render_count )); ${functions[_egg_clock_cache]}"\n')
     read_for(0.7)
     send('print -r -- "BUFFER_SURVIVES:$render_count"')
     output = read_for(2.3)
@@ -82,9 +82,25 @@ try:
     send('captured=$(cd "$HOME/enter-me"; print CAPTURE_TOKEN); print -r -- "$captured"\n')
     output = read_for(0.7)
     assert "AUTO_LIST_TOKEN" not in output, "listing polluted command substitution"
-    send('LAZYSHELL_NO_AUTO_LS=1; cd "$HOME/enter-me"\n')
+    send('EGG_NO_AUTO_LS=1; cd "$HOME/enter-me"\n')
     output = read_for(0.7)
     assert "AUTO_LIST_TOKEN" not in output, "directory listing opt-out did not work"
+
+    # Tips use the original command and leave execution and exit status alone.
+    send("alias tiptest='print ALIAS_EXECUTED'\n")
+    read_for(0.5)
+    send('print ALIAS_EXECUTED\n')
+    output = read_for(0.7)
+    assert "tip" in output and "tiptest" in output, "alias tip missing: " + output
+    assert "ALIAS_EXECUTED" in output, "tip prevented execution"
+    send('tiptest\n')
+    output = read_for(0.7)
+    assert "for" not in output, "already used alias produced a tip: " + output
+    send('EGG_NO_ALIAS_TIPS=1\n')
+    read_for(0.5)
+    send('print ALIAS_EXECUTED\n')
+    output = read_for(0.7)
+    assert "tiptest" not in output, "alias tip opt-out failed: " + output
 
     # No redraws should run over a foreground command's output.
     send('touch "$HOME/foreground-started"; sleep 2\n')

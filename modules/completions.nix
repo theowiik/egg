@@ -9,6 +9,9 @@
   pkgs,
   ...
 }:
+let
+  colors = (import ../lib/palette.nix { inherit lib; }).hex;
+in
 {
   programs.zsh = {
     initContent = lib.mkMerge [
@@ -23,13 +26,15 @@
 
       # Runs after compinit — zstyles are read lazily at completion time.
       (lib.mkOrder 1000 ''
+        zmodload zsh/complist
+
         # --- completion styles --------------------------------------------
         zstyle ':completion:*' menu select                      # arrow-key menu
         zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
         zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS} # colourise matches
         zstyle ':completion:*' group-name ""                    # group by category
-        zstyle ':completion:*:descriptions' format '%F{blue}%B%d%b%f'
-        zstyle ':completion:*:warnings' format '%F{red}no matches%f'
+        zstyle ':completion:*:descriptions' format '%F{${colors.brand}}%B%d%b%f'
+        zstyle ':completion:*:warnings' format '%F{${colors.err}}no matches%f'
         zstyle ':completion:*' use-cache on
         zstyle ':completion:*' cache-path "${config.xdg.cacheHome}/zsh/zcompcache"
         zstyle ':completion:*' special-dirs true                # complete ../

@@ -4,7 +4,7 @@
   previewRoot,
 }:
 pkgs.writeShellApplication {
-  name = "lazyshell-try";
+  name = "egg-try";
   runtimeInputs = [ pkgs.coreutils ];
   text =
     pkgs.lib.replaceStrings
