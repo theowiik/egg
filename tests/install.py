@@ -40,7 +40,7 @@ with open(os.environ["RECORD"], "w") as f:
     assert data["env"]["EGG_USERNAME"] != "wrong"
     assert data["env"]["EGG_HOME"] == str(home)
     local = Path(data["env"]["EGG_CONFIG"])
-    assert local == home / "settings/egg/local.nix"
+    assert local == repo / "configs/personal.nix"
     local.parent.mkdir(parents=True)
     local.write_text("{}")
     result, data = run("--dry-run")
@@ -48,6 +48,17 @@ with open(os.environ["RECORD"], "w") as f:
     assert data["args"][-1] == "--dry-run"
     result, data = run("--news", EGG_CONFIG=str(local))
     assert data["args"][0] == "news" and data["env"]["EGG_CONFIG"] == str(local)
+    work = repo / "configs/work.nix"
+    work.write_text("{}")
+    result, data = run("--config", "work", "--build", EGG_CONFIG=str(local))
+    assert data["env"]["EGG_CONFIG"] == str(work) and data["args"][0] == "build"
+    result, data = run("--news", "--config", "work")
+    assert data["env"]["EGG_CONFIG"] == str(work) and data["args"][0] == "news"
+    for args in [("--config",), ("--config", "../work"), ("--config", "work.nix")]:
+        result, data = run(*args, success=False)
+        assert "--config needs a name" in result.stderr and data is None
+    result, data = run("--config", "missing", success=False)
+    assert "config not found" in result.stderr and data is None
     result, data = run("--help")
     assert "Usage:" in result.stdout and data is None
     result, data = run(success=False, EGG_CONFIG="relative.nix")
@@ -57,5 +68,5 @@ with open(os.environ["RECORD"], "w") as f:
     result, data = run(success=False, EGG_CONFIG=str(home))
     assert "not a file" in result.stderr and data is None
     result, data = run("--build", XDG_CONFIG_HOME="")
-    assert data["env"]["EGG_CONFIG"] == str(home / ".config/egg/local.nix")
+    assert data["env"]["EGG_CONFIG"] == str(local)
 print("All installer checks passed")

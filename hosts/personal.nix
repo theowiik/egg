@@ -1,2 +1,2 @@
-# Shared personal profile; identity belongs in the user's local.nix.
+# Shared personal profile; identity belongs in configs/*.nix.
 { ... }: { }

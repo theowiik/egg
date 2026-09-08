@@ -29,43 +29,66 @@ touched. Type `exit` to leave; the preview deletes itself.
 
 ## Install it
 
-Create your local settings outside the checkout:
+Keep one small file per configuration in `configs/`:
 
 ```sh
-mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/egg"
-cp local.nix.example "${XDG_CONFIG_HOME:-$HOME/.config}/egg/local.nix"
+cp configs/example.nix configs/personal.nix
 ```
 
-Set `egg.git.userName` and `egg.git.userEmail` in that file, then run:
+Edit `configs/personal.nix` with your identity:
+
+```nix
+{ ... }:
+{
+  egg.git.userName = "Your Name";
+  egg.git.userEmail = "you@your-domain.org";
+}
+```
+
+Then install:
 
 ```sh
 nix run .#install
 exec ~/.nix-profile/bin/zsh -l
 ```
 
-The installer detects your username, home directory and platform. It remembers
-where you cloned egg, so `hms`, `egg switch` and `egg edit` work from elsewhere.
-No tracked files need editing: pull shared updates with `git pull`, then `hms`.
-The default profile is `personal`; set `egg.profile = "work";` in local settings
-to add kubectl and awscli2. The file is a Home Manager module, so it also accepts
-`egg.extraPackages` and other module options.
+Want another configuration? Copy the example to `configs/work.nix` or
+`configs/laptop.nix`, edit it, and select it by name:
 
-Use `nix run .#install -- --build` to build without activating. Home Manager
-options such as `--dry-run` can also be passed after `--`. Activation backs up
-conflicting dotfiles with the `.backup` suffix.
+```sh
+nix run .#install -- --config work
+```
 
-`EGG_DIR` overrides the repository path. `EGG_CONFIG` selects an alternative
-absolute local-settings path (for example, `$PWD/local.nix`, which is ignored
-by Git). Rebuild commands remember this path. Missing settings leave Git identity unset; `egg doctor` explains how
-to set it. Local settings are evaluated with `--impure`; dependencies still
-come from `flake.lock`. Keep secrets out of the module, since generated
-configuration is stored in the Nix store. `nix run .#try` always uses a fixed,
-independent preview and never reads your local settings.
+The filename is your choice; it does not need to match a hostname.
+`configs/personal.nix` is the default. `hms` remembers the file you installed
+with, and `hms --config laptop` selects another. Each file is a Home Manager
+module: it can set identity, `egg.extraPackages`, and `egg.profile = "work";`
+(which adds kubectl and awscli2).
 
-Already using a named machine? The old entries remain available for direct
-Home Manager commands. Copy your identity and custom options from tracked
-files into local settings before using the new installer. Restore your tracked
-customizations once transferred, so future pulls can stay conflict-free.
+Your files live in the repo directory but are Git-ignored; only
+`configs/example.nix` is shared. You can see and edit them together without
+changing `flake.nix`, and `git pull` leaves them alone. Back them up separately,
+or use `git add -f configs/<name>.nix` if you want to version one yourself.
+
+The installer detects your username, home directory and platform, and remembers
+the checkout path. `EGG_DIR` overrides that path; `EGG_CONFIG` can still select
+an absolute settings path outside the repo. An explicit `--config` takes
+precedence over `EGG_CONFIG`.
+
+Use `nix run .#install -- --config work --build` to build without activating.
+Home Manager options such as `--dry-run` go after the installer options.
+Activation backs up conflicting dotfiles with the `.backup` suffix.
+Missing default settings leave Git identity unset; `egg doctor` points to the
+file to edit. An explicitly selected config must exist.
+
+Settings are read directly from the checkout using `--impure`, so ignored
+files work without `git add`. Dependencies still come from `flake.lock`.
+Keep secrets out of Nix config. `nix run .#try` stays independent of your files.
+
+If you used the earlier `~/.config/egg/local.nix` setup, move that file to
+`configs/personal.nix` and run `nix run .#install -- --config personal` once.
+The old named Home Manager entries also remain available; move any tracked
+personal customizations into a config file to keep future pulls simple.
 
 ## The `egg` command
 
@@ -125,7 +148,7 @@ through `egg.extraPackages` in your local settings.
 flake.nix            constructors and compatibility entries, plus `nix run .#try` and `.#install`
 home.nix             what every machine gets
 hosts/*.nix          shared personal/work profiles
-local.nix.example   template for settings outside the checkout
+configs/*.nix       your small config files (Git-ignored, except example.nix)
 modules/*.nix        the shared configuration, one file per concern
 modules/options.nix  the `egg.*` options hosts set
 lib/palette.nix      the colours everything else reads

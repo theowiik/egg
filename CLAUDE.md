@@ -56,10 +56,13 @@ the pinned Home Manager with `--impure --flake "$EGG_DIR#current"`.
 `homeConfigurations.current` exists only when `EGG_SYSTEM` is supplied;
 normal pure evaluation never accesses runtime settings.
 
-`lib/runtime-home.nix` combines those values with an optional external Home
-Manager module at `$XDG_CONFIG_HOME/egg/local.nix` (default
-`~/.config/egg/local.nix`, override with an absolute `EGG_CONFIG`). It must read
-that live path, not a path relative to the Git-filtered flake source.
+`lib/runtime-home.nix` combines runtime values with a Home Manager module in
+`configs/<name>.nix`. The installer defaults to `configs/personal.nix`;
+`--config <name>` selects another file and takes precedence over an absolute
+`EGG_CONFIG` override. Rebuilds remember the selected path. `configs/*.nix`
+are Git-ignored except `configs/example.nix`; read the live absolute path,
+not a path relative to the Git-filtered flake source. No `git add` is needed
+for user configs. An explicitly named config must exist.
 `--build` builds without activation; `--news` shows news. `egg switch`/`hms`
 and `egg news`/`hmn` use this installer too. Previews remain hermetic.
 
@@ -67,8 +70,8 @@ and `egg news`/`hmn` use this installer too. Previews remain hermetic.
   `pkgs.stdenv.hostPlatform.isDarwin/isLinux`.
 - `hosts/*.nix` — shared profiles, conditional on `egg.profile`. No personal identity.
 - `modules/options.nix` — the `egg.*` options; identity defaults to empty.
-- External `local.nix` — user identity, profile choice and custom packages.
-  New adopters must never need to edit tracked files.
+- `configs/*.nix` — one small user config per file: identity, profile and packages.
+  New adopters edit these files in the checkout, never the shared flake.
 
 New modules go in `modules/` **and** must be listed in `modules/default.nix`.
 

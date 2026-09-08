@@ -10,7 +10,7 @@
     };
     localConfigFile = lib.mkOption {
       type = lib.types.str;
-      default = "${config.xdg.configHome}/egg/local.nix";
+      default = "${config.egg.directory}/configs/personal.nix";
       description = "Local settings file remembered by rebuild commands; EGG_CONFIG overrides it.";
     };
     profile = lib.mkOption {

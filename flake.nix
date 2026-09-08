@@ -201,7 +201,7 @@
           name = "egg-fmt";
           runtimeInputs = [ pkgs.nixfmt ];
           text = ''
-            exec nixfmt "$@" ./*.nix ./hosts/*.nix ./lib/*.nix ./modules/*.nix ./tests/*.nix
+            exec nixfmt "$@" ./*.nix ./hosts/*.nix ./lib/*.nix ./modules/*.nix ./tests/*.nix ./configs/example.nix
           '';
         }
       );

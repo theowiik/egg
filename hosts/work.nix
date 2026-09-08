@@ -1,4 +1,4 @@
-# Optional work tools, selected with egg.profile = "work" in local.nix.
+# Optional work tools, selected with egg.profile = "work" in configs/*.nix.
 {
   config,
   lib,

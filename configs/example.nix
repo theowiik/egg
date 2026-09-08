@@ -1,5 +1,5 @@
-# Copy to ~/.config/egg/local.nix (or $XDG_CONFIG_HOME/egg/local.nix).
-# This is a Home Manager module. Keep credentials/secrets out of Nix config.
+# Copy this file to personal.nix, work.nix, or another name in configs/.
+# Select it with: nix run .#install -- --config <name>
 { ... }:
 {
   egg.git.userName = "Your Name";
