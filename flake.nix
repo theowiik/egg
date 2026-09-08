@@ -40,26 +40,32 @@
         system: username:
         if lib.hasSuffix "darwin" system then "/Users/${username}" else "/home/${username}";
 
-      # One helper so adding a machine is a three-line entry below.
+      # Shared constructor for named machines, runtime installs and previews.
       mkHome =
         {
           system,
           username,
           host,
           homeDirectory ? defaultHome system username,
+          extraModules ? [ ],
         }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor system;
           extraSpecialArgs = { inherit inputs system; };
           modules = [
             ./home.nix
-            ./hosts/${host}.nix
+            ./hosts/personal.nix
+            ./hosts/work.nix
             {
+              egg.profile = lib.mkDefault host;
               home.username = username;
               home.homeDirectory = homeDirectory;
             }
-          ];
+          ]
+          ++ extraModules;
         };
+
+      runtimeHome = args: import ./lib/runtime-home.nix ({ inherit mkHome; } // args);
 
       # Home Manager embeds HOME in generated files, so the preview path is
       # fixed. Its parent is an atomic lock, owned and removed by the launcher.
@@ -88,20 +94,11 @@
         in
         pkgs.writeShellApplication {
           name = "egg-install";
-          runtimeInputs = [ home-manager.packages.${system}.home-manager ];
-          text = ''
-            if [[ "''${1:-}" = --help || "''${1:-}" = -h ]]; then
-              echo 'Usage: nix run .#install -- [Home Manager switch options]'
-              echo 'Uses the current directory, or EGG_DIR, as the configuration.'
-              exit 0
-            fi
-            dir="''${EGG_DIR:-$PWD}"
-            if [ ! -f "$dir/flake.nix" ]; then
-              echo "egg: no flake.nix in $dir; run from the repository or set EGG_DIR" >&2
-              exit 1
-            fi
-            exec home-manager switch -b backup --flake "$dir" "$@"
-          '';
+          runtimeInputs = [
+            home-manager.packages.${system}.home-manager
+            pkgs.coreutils
+          ];
+          text = lib.replaceStrings [ "@system@" ] [ system ] (builtins.readFile ./lib/install.sh);
         };
 
     in
@@ -110,7 +107,7 @@
       # Machines. Key format is "user@host" — that is what you pass to
       # `home-manager switch --flake .#user@host`.
       # ---------------------------------------------------------------------
-      homeConfigurations = rec {
+      homeConfigurations = (rec {
         "oet@puter" = mkHome {
           system = "x86_64-linux";
           username = "oet";
@@ -124,8 +121,18 @@
           host = "personal";
         };
 
-        # Let bare `hms` and `nix run .#install` find neo automatically.
+        # Compatibility for existing direct Home Manager invocations.
         "theo@Theos-MacBook-Neo.local" = neo;
+      })
+      // lib.optionalAttrs (builtins.getEnv "EGG_SYSTEM" != "") {
+        # Only exposed by the installer: pure checks/previews never read local state.
+        current = runtimeHome {
+          system = builtins.getEnv "EGG_SYSTEM";
+          username = builtins.getEnv "EGG_USERNAME";
+          homeDirectory = builtins.getEnv "EGG_HOME";
+          directory = builtins.getEnv "EGG_DIR";
+          localFile = builtins.getEnv "EGG_CONFIG";
+        };
       };
 
       # Preview and install both use the versions pinned by this flake.
@@ -172,6 +179,7 @@
           home = previewHome system testRoot;
         in
         {
+          runtime = import ./tests/runtime.nix { inherit pkgs runtimeHome system; };
           smoke = import ./tests/smoke.nix {
             inherit pkgs home;
             preview = import ./lib/preview.nix {
@@ -184,6 +192,18 @@
         }
       );
 
-      formatter = forAllSystems (system: (pkgsFor system).nixfmt);
+      formatter = forAllSystems (
+        system:
+        let
+          pkgs = pkgsFor system;
+        in
+        pkgs.writeShellApplication {
+          name = "egg-fmt";
+          runtimeInputs = [ pkgs.nixfmt ];
+          text = ''
+            exec nixfmt "$@" ./*.nix ./hosts/*.nix ./lib/*.nix ./modules/*.nix ./tests/*.nix
+          '';
+        }
+      );
     };
 }

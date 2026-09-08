@@ -28,6 +28,7 @@ before any build after creating a file, or the error will be a confusing
 nix build --no-link '.#homeConfigurations."oet@puter".activationPackage'   # Linux, builds
 nix eval --raw '.#homeConfigurations.neo.activationPackage.drvPath' # macOS, evaluates only
 nix flake check
+python3 tests/onboarding.py                                               # real installer, build only
 nix fmt                                                                     # nixfmt, must leave no diff
 nix run .#try                                                               # real zsh in a sandbox $HOME
 ```
@@ -47,20 +48,27 @@ dotfiles. Use `nix run .#try` to test behaviour instead.
 
 ## Architecture
 
-`flake.nix` defines a `mkHome` helper and one `homeConfigurations."user@host"`
-entry per machine. The key format matters: home-manager resolves a bare
-`--flake <path>` by looking for `$USER@$(hostname -f|hostname|hostname -s)`, then
-plain `$USER`.
+`flake.nix` defines `mkHome` for previews, runtime installs and the retained
+named configurations. `nix run .#install` detects the username with `id -un`,
+uses `$HOME`, and passes its Nix package system (no uname parsing). It exports
+`EGG_SYSTEM`, `EGG_USERNAME`, `EGG_HOME`, `EGG_DIR`, and `EGG_CONFIG`, then calls
+the pinned Home Manager with `--impure --flake "$EGG_DIR#current"`.
+`homeConfigurations.current` exists only when `EGG_SYSTEM` is supplied;
+normal pure evaluation never accesses runtime settings.
 
-Three layers, and putting a change in the wrong one is the main way to break this
-repo:
+`lib/runtime-home.nix` combines those values with an optional external Home
+Manager module at `$XDG_CONFIG_HOME/egg/local.nix` (default
+`~/.config/egg/local.nix`, override with an absolute `EGG_CONFIG`). It must read
+that live path, not a path relative to the Git-filtered flake source.
+`--build` builds without activation; `--news` shows news. `egg switch`/`hms`
+and `egg news`/`hmn` use this installer too. Previews remain hermetic.
 
 - `modules/*.nix` — shared by every machine. Cross-platform differences branch on
   `pkgs.stdenv.hostPlatform.isDarwin/isLinux`.
-- `hosts/*.nix` — per-machine. Anything that differs between work and personal
-  belongs here, otherwise `git pull` conflicts between machines.
-- `modules/options.nix` — the `egg.*` option namespace (`profile`,
-  `git.userEmail`, `extraPackages`) that hosts set declaratively.
+- `hosts/*.nix` — shared profiles, conditional on `egg.profile`. No personal identity.
+- `modules/options.nix` — the `egg.*` options; identity defaults to empty.
+- External `local.nix` — user identity, profile choice and custom packages.
+  New adopters must never need to edit tracked files.
 
 New modules go in `modules/` **and** must be listed in `modules/default.nix`.
 

@@ -29,28 +29,43 @@ touched. Type `exit` to leave; the preview deletes itself.
 
 ## Install it
 
-Add your machine under `homeConfigurations` in `flake.nix`, replacing the
-username and hostname with your own:
+Create your local settings outside the checkout:
 
-```nix
-"alice@thinkpad" = mkHome {
-  system = "x86_64-linux"; # aarch64-linux and aarch64-darwin also work
-  username = "alice";
-  host = "personal";
-};
+```sh
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/egg"
+cp local.nix.example "${XDG_CONFIG_HOME:-$HOME/.config}/egg/local.nix"
 ```
 
-The key must be `$USER@$(hostname)` for a bare `--flake .` to find it. Set your
-Git identity in `hosts/personal.nix` with `egg.git.userName` and
-`egg.git.userEmail`, then:
+Set `egg.git.userName` and `egg.git.userEmail` in that file, then run:
 
 ```sh
 nix run .#install
 exec ~/.nix-profile/bin/zsh -l
 ```
 
-If you cloned somewhere other than `~/git/egg`, set `egg.directory` in your host
-file or export `EGG_DIR`, so `egg switch` and `egg edit` find the repository.
+The installer detects your username, home directory and platform. It remembers
+where you cloned egg, so `hms`, `egg switch` and `egg edit` work from elsewhere.
+No tracked files need editing: pull shared updates with `git pull`, then `hms`.
+The default profile is `personal`; set `egg.profile = "work";` in local settings
+to add kubectl and awscli2. The file is a Home Manager module, so it also accepts
+`egg.extraPackages` and other module options.
+
+Use `nix run .#install -- --build` to build without activating. Home Manager
+options such as `--dry-run` can also be passed after `--`. Activation backs up
+conflicting dotfiles with the `.backup` suffix.
+
+`EGG_DIR` overrides the repository path. `EGG_CONFIG` selects an alternative
+absolute local-settings path (for example, `$PWD/local.nix`, which is ignored
+by Git). Rebuild commands remember this path. Missing settings leave Git identity unset; `egg doctor` explains how
+to set it. Local settings are evaluated with `--impure`; dependencies still
+come from `flake.lock`. Keep secrets out of the module, since generated
+configuration is stored in the Nix store. `nix run .#try` always uses a fixed,
+independent preview and never reads your local settings.
+
+Already using a named machine? The old entries remain available for direct
+Home Manager commands. Copy your identity and custom options from tracked
+files into local settings before using the new installer. Restore your tracked
+customizations once transferred, so future pulls can stay conflict-free.
 
 ## The `egg` command
 
@@ -102,14 +117,15 @@ prints the same list with current descriptions.
 
 The list is meant to grow slowly. Add a tool as one entry in `egg.toolbox` in
 `modules/packages.nix` when you find yourself wanting it, or per machine
-through `egg.extraPackages` in your host file.
+through `egg.extraPackages` in your local settings.
 
 ## Layout
 
 ```
-flake.nix            machines, plus `nix run .#try` and `.#install`
+flake.nix            constructors and compatibility entries, plus `nix run .#try` and `.#install`
 home.nix             what every machine gets
-hosts/*.nix          per machine settings (Git identity, extra packages)
+hosts/*.nix          shared personal/work profiles
+local.nix.example   template for settings outside the checkout
 modules/*.nix        the shared configuration, one file per concern
 modules/options.nix  the `egg.*` options hosts set
 lib/palette.nix      the colours everything else reads

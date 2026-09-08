@@ -116,6 +116,8 @@ let
 
       dir=${lib.escapeShellArg config.egg.directory}
       dir="''${EGG_DIR:-$dir}"
+      local_config=${lib.escapeShellArg config.egg.localConfigFile}
+      local_config="''${EGG_CONFIG:-$local_config}"
 
       case "''${1:-help}" in
         help | -h | --help)
@@ -133,7 +135,11 @@ let
         switch | news)
           action="$1"
           shift
-          exec home-manager "$action" --flake "$dir" "$@"
+          if [ "$action" = news ]; then
+            set -- --news "$@"
+          fi
+          export EGG_DIR="$dir" EGG_CONFIG="$local_config"
+          exec nix --extra-experimental-features 'nix-command flakes' run "$dir#install" -- "$@"
           ;;
         edit)
           cd "$dir" && exec ''${EDITOR:-hx} .

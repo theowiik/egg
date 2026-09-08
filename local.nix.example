@@ -1,0 +1,9 @@
+# Copy to ~/.config/egg/local.nix (or $XDG_CONFIG_HOME/egg/local.nix).
+# This is a Home Manager module. Keep credentials/secrets out of Nix config.
+{ ... }:
+{
+  egg.git.userName = "Your Name";
+  egg.git.userEmail = "you@your-domain.org";
+  # egg.profile = "work"; # default: personal; adds kubectl and awscli2
+  # egg.extraPackages = [ ];
+}

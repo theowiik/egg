@@ -1,5 +1,5 @@
 # Shared base configuration — everything every machine gets.
-# Per-machine differences live in hosts/*.nix.
+# Shared profiles live in hosts/*.nix; user settings live in external local.nix.
 {
   inputs,
   ...

@@ -8,6 +8,11 @@
       default = "${config.home.homeDirectory}/git/egg";
       description = "Repository path used by rebuild, news and edit commands; EGG_DIR overrides it.";
     };
+    localConfigFile = lib.mkOption {
+      type = lib.types.str;
+      default = "${config.xdg.configHome}/egg/local.nix";
+      description = "Local settings file remembered by rebuild commands; EGG_CONFIG overrides it.";
+    };
     profile = lib.mkOption {
       type = lib.types.enum [
         "personal"
@@ -20,12 +25,12 @@
     git = {
       userName = lib.mkOption {
         type = lib.types.str;
-        default = "Theo Wiik";
+        default = "";
         description = "git user.name for this machine.";
       };
       userEmail = lib.mkOption {
         type = lib.types.str;
-        default = "you@example.com";
+        default = "";
         description = "git user.email for this machine (work machines override this).";
       };
     };

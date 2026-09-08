@@ -1,15 +1,15 @@
-# Work machine. Different identity, different extra tooling.
-{ pkgs, ... }:
+# Optional work tools, selected with egg.profile = "work" in local.nix.
 {
-  egg = {
-    profile = "work";
-    git.userEmail = "theo.wiik@example-corp.com"; # <- set your work address
-
-    extraPackages = with pkgs; [
-      # Typical work-only tooling; trim to taste.
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  config = lib.mkIf (config.egg.profile == "work") {
+    egg.extraPackages = with pkgs; [
       kubectl
       awscli2
     ];
   };
-
 }

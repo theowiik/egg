@@ -50,12 +50,12 @@ with tempfile.TemporaryDirectory() as temp:
         [[ -z ${aliases[$standard]:-} ]]
       done
       mkdir "$HOME/stubs"
-      printf '#!/bin/sh\nprintf "%%s\\n" "$@" > "$HOME/hm-args"\n' > "$HOME/stubs/home-manager"
-      chmod +x "$HOME/stubs/home-manager"
+      printf '#!/bin/sh\nprintf "%%s\\n" "$@" > "$HOME/hm-args"\n' > "$HOME/stubs/nix"
+      chmod +x "$HOME/stubs/nix"
       PATH="$HOME/stubs:$PATH" hms --dry-run
-      [[ $(<"$HOME/hm-args") = $'switch\n--flake\n'$EGG_DIR$'\n--dry-run' ]]
+      [[ $(<"$HOME/hm-args") = $'--extra-experimental-features\nnix-command flakes\nrun\n'$EGG_DIR$'#install\n--\n--dry-run' ]]
       PATH="$HOME/stubs:$PATH" hmn
-      [[ $(<"$HOME/hm-args") = $'news\n--flake\n'$EGG_DIR ]]
+      [[ $(<"$HOME/hm-args") = $'--extra-experimental-features\nnix-command flakes\nrun\n'$EGG_DIR$'#install\n--\n--news' ]]
       mkdir "$HOME/files"
       cd "$HOME/files"
       target=$'target with\na newline'

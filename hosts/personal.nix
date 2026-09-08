@@ -1,11 +1,2 @@
-# Personal machine.
-{ ... }:
-{
-  egg = {
-    profile = "personal";
-    git.userEmail = "you@example.com";
-  };
-
-  # Packages only this machine needs.
-  # egg.extraPackages = with pkgs; [ ffmpeg yt-dlp ];
-}
+# Shared personal profile; identity belongs in the user's local.nix.
+{ ... }: { }

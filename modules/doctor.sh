@@ -39,13 +39,13 @@ if command -v git >/dev/null 2>&1; then
   git_name=$(git config --global --get user.name || true)
   git_email=$(git config --global --get user.email || true)
   if [ -z "$git_name" ]; then
-    fail "Git user.name is unset; set egg.git.userName in your host config"
+    fail "Git user.name is unset; set egg.git.userName in $local_config"
   else
     ok "Git user.name: $git_name"
   fi
   case "$git_email" in
     ''|*@example.com|*@example-corp.com)
-      fail "Git email is unset or a placeholder; set egg.git.userEmail in your host config"
+      fail "Git email is unset or a placeholder; set egg.git.userEmail in $local_config"
       ;;
     *@*) ok "Git user.email: $git_email" ;;
     *) fail "Git user.email needs an email address" ;;

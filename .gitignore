@@ -2,3 +2,6 @@ result
 result-*
 .direnv/
 .DS_Store
+
+# Optional in-checkout settings, selected with an absolute EGG_CONFIG path.
+/local.nix
