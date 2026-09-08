@@ -23,13 +23,13 @@ in
       # separators; the optional context blocks are self-closing islands so an
       # absent segment never leaves an empty colored wedge behind.
       format = lib.concatStrings [
-        "[](brand)"
+        "[](brand)"
         "[🥚 ](bg:brand fg:surface)"
         "$username"
         "$hostname"
-        "[](fg:brand bg:nix)"
+        "[](fg:brand bg:nix)"
         "$directory"
-        "[](fg:nix)"
+        "[](fg:nix)"
         "$git_branch"
         "$git_status"
         "$git_state"
@@ -64,12 +64,12 @@ in
       };
 
       git_branch = {
-        format = "[](git)[  $branch](bg:git fg:surface)";
+        format = "[](git)[  $branch](bg:git fg:surface)";
         style = "bg:git fg:surface";
       };
 
       git_status = {
-        format = "([ $all_status$ahead_behind](bg:git fg:surface))[](fg:git)";
+        format = "([ $all_status$ahead_behind](bg:git fg:surface))[](fg:git)";
         style = "bg:git fg:surface";
         conflicted = "≠\${count}";
         ahead = "↑\${count}";
@@ -83,29 +83,29 @@ in
         deleted = "✘\${count}";
       };
 
-      git_state.format = "[](err)[ $state $progress_current/$progress_total ](bg:err fg:text)[](fg:err)";
+      git_state.format = "[](err)[ $state $progress_current/$progress_total ](bg:err fg:text)[](fg:err)";
 
       # ❄ marks a `nix develop` / `nix shell` subshell.
       nix_shell = {
-        format = "[](nix)[ ❄ $state ](bg:nix fg:surface)[](fg:nix)";
+        format = "[](nix)[ ❄ $state ](bg:nix fg:surface)[](fg:nix)";
         impure_msg = "impure";
         pure_msg = "pure";
       };
 
       cmd_duration = {
         min_time = 2000;
-        format = "[](slow)[ $duration ](bg:slow fg:surface)[](fg:slow)";
+        format = "[](slow)[ $duration ](bg:slow fg:surface)[](fg:slow)";
       };
 
       jobs = {
-        format = "[](slow)[ $number jobs ](bg:slow fg:surface)[](fg:slow)";
+        format = "[](slow)[ $number jobs ](bg:slow fg:surface)[](fg:slow)";
         number_threshold = 1;
         symbol_threshold = 1;
       };
 
       status = {
         disabled = false;
-        format = "[](err)[ exit $status ](bg:err fg:text)[](fg:err)";
+        format = "[](err)[ exit $status ](bg:err fg:text)[](fg:err)";
       };
 
       character = {
@@ -116,7 +116,7 @@ in
 
       time = {
         disabled = false;
-        format = "[](fg:overlay)[  $time ](bg:overlay fg:subtle)";
+        format = "[](fg:overlay)[  $time ](bg:overlay fg:subtle)";
         time_format = "%H:%M";
       };
     };
