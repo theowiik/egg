@@ -23,11 +23,9 @@ in
       # Set EGG_NO_WELCOME=1 in ~/.zshrc.local to opt out immediately.
       if [[ -o interactive && -o login && -t 1 && "''${TERM:-dumb}" != dumb && -z "''${EGG_NO_WELCOME:-}" ]]; then
         print
-        printf '\033[${colors.brand}m  ╭── 🥚 egg ─────────────────╮\033[0m\n'
-        printf '\033[${colors.dir}m     SHELL CONSOLE  //  READY\033[0m\n'
-        printf '\033[${colors.brand}m  ╰──────────────────────────╯\033[0m\n'
-        printf '\033[0m\033[${colors.subtle}m  %s\033[0m\n' '${platform} / ${toString (builtins.length config.egg.toolbox)} tools'
-        printf '\033[${colors.dir}m  egg help\033[0m\n'
+        printf '\033[1;${colors.brand}m  🥚 egg\033[0m\n'
+        printf '\033[${colors.subtle}m  %s\033[0m\n' '${platform} · ${toString (builtins.length config.egg.toolbox)} tools'
+        printf '\033[${colors.muted}m  → \033[${colors.dir}megg help\033[0m\n'
         print
       fi
     ''
