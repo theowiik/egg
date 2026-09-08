@@ -62,8 +62,8 @@ nix run .#install -- --config work
 The filename is your choice; it does not need to match a hostname.
 `configs/personal.nix` is the default. `hms` remembers the file you installed
 with, and `hms --config laptop` selects another. Each file is a Home Manager
-module: it can set identity, `egg.extraPackages`, and `egg.profile = "work";`
-(which adds kubectl and awscli2).
+module: it can set identity and `egg.extraPackages`. There are no built-in
+personal/work profiles; these are just filenames.
 
 Your files live in the repo directory but are Git-ignored; only
 `configs/example.nix` is shared. You can see and edit them together without
@@ -147,10 +147,9 @@ through `egg.extraPackages` in your local settings.
 ```
 flake.nix            constructors and compatibility entries, plus `nix run .#try` and `.#install`
 home.nix             what every machine gets
-hosts/*.nix          shared personal/work profiles
 configs/*.nix       your small config files (Git-ignored, except example.nix)
 modules/*.nix        the shared configuration, one file per concern
-modules/options.nix  the `egg.*` options hosts set
+modules/options.nix  the `egg.*` options user configs set
 lib/palette.nix      the colours everything else reads
 tests/               smoke tests run by `nix flake check`
 ```

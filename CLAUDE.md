@@ -68,9 +68,8 @@ and `egg news`/`hmn` use this installer too. Previews remain hermetic.
 
 - `modules/*.nix` — shared by every machine. Cross-platform differences branch on
   `pkgs.stdenv.hostPlatform.isDarwin/isLinux`.
-- `hosts/*.nix` — shared profiles, conditional on `egg.profile`. No personal identity.
 - `modules/options.nix` — the `egg.*` options; identity defaults to empty.
-- `configs/*.nix` — one small user config per file: identity, profile and packages.
+- `configs/*.nix` — one small user config per file: identity and extra packages.
   New adopters edit these files in the checkout, never the shared flake.
 
 New modules go in `modules/` **and** must be listed in `modules/default.nix`.

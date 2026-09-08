@@ -45,7 +45,6 @@
         {
           system,
           username,
-          host,
           homeDirectory ? defaultHome system username,
           extraModules ? [ ],
         }:
@@ -54,10 +53,7 @@
           extraSpecialArgs = { inherit inputs system; };
           modules = [
             ./home.nix
-            ./hosts/personal.nix
-            ./hosts/work.nix
             {
-              egg.profile = lib.mkDefault host;
               home.username = username;
               home.homeDirectory = homeDirectory;
             }
@@ -75,7 +71,6 @@
         mkHome {
           inherit system;
           username = "egg";
-          host = "personal";
           homeDirectory = "${root}/home";
         };
 
@@ -111,14 +106,12 @@
         "oet@puter" = mkHome {
           system = "x86_64-linux";
           username = "oet";
-          host = "personal";
         };
 
         # Personal Mac, also selectable explicitly with --flake .#neo.
         neo = mkHome {
           system = "aarch64-darwin";
           username = "theo";
-          host = "personal";
         };
 
         # Compatibility for existing direct Home Manager invocations.
@@ -201,7 +194,7 @@
           name = "egg-fmt";
           runtimeInputs = [ pkgs.nixfmt ];
           text = ''
-            exec nixfmt "$@" ./*.nix ./hosts/*.nix ./lib/*.nix ./modules/*.nix ./tests/*.nix ./configs/example.nix
+            exec nixfmt "$@" ./*.nix ./lib/*.nix ./modules/*.nix ./tests/*.nix ./configs/example.nix
           '';
         }
       );

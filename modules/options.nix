@@ -1,4 +1,4 @@
-# Small option namespace so host files stay declarative one-liners
+# Small option namespace so user config files stay declarative one-liners
 # instead of copy-pasted blocks of program config.
 { config, lib, ... }:
 {
@@ -13,15 +13,6 @@
       default = "${config.egg.directory}/configs/personal.nix";
       description = "Local settings file remembered by rebuild commands; EGG_CONFIG overrides it.";
     };
-    profile = lib.mkOption {
-      type = lib.types.enum [
-        "personal"
-        "work"
-      ];
-      default = "personal";
-      description = "Which flavour of machine this is. Modules can branch on it.";
-    };
-
     git = {
       userName = lib.mkOption {
         type = lib.types.str;
@@ -31,7 +22,7 @@
       userEmail = lib.mkOption {
         type = lib.types.str;
         default = "";
-        description = "git user.email for this machine (work machines override this).";
+        description = "git user.email for this configuration.";
       };
     };
 

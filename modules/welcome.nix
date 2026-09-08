@@ -26,7 +26,7 @@ in
         printf '\033[${colors.brand}m  ╭── 🥚 egg ─────────────────╮\033[0m\n'
         printf '\033[${colors.dir}m     SHELL CONSOLE  //  READY\033[0m\n'
         printf '\033[${colors.brand}m  ╰──────────────────────────╯\033[0m\n'
-        printf '\033[0m\033[${colors.subtle}m  %s\033[0m\n' '${config.egg.profile} / ${platform} / ${toString (builtins.length config.egg.toolbox)} tools'
+        printf '\033[0m\033[${colors.subtle}m  %s\033[0m\n' '${platform} / ${toString (builtins.length config.egg.toolbox)} tools'
         printf '\033[${colors.dir}m  egg help\033[0m\n'
         print
       fi

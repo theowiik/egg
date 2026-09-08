@@ -9,7 +9,6 @@
 }:
 mkHome {
   inherit system username homeDirectory;
-  host = "personal";
   extraModules = [
     ({ lib, ... }: {
       egg.directory = lib.mkDefault directory;
