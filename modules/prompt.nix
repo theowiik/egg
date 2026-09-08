@@ -1,4 +1,4 @@
-# Airy prompt: an egg, a lavender path, and quiet mint Git context.
+# Powerline prompt: an egg, a lavender path, and mint Git context on filled segments.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
@@ -19,12 +19,20 @@ in
 
       palettes.egg = colors;
 
+      # Segments that always render (egg → directory) are chained with powerline
+      # separators; the optional context blocks are self-closing islands so an
+      # absent segment never leaves an empty colored wedge behind.
       format = lib.concatStrings [
-        "[🥚 ](brand)"
-        "$directory"
+        "[](brand)"
+        "[🥚 ](bg:brand fg:surface)"
         "$username"
         "$hostname"
-        "([  · ](muted)$git_branch$git_status$git_state)"
+        "[](fg:brand bg:nix)"
+        "$directory"
+        "[](fg:nix)"
+        "$git_branch"
+        "$git_status"
+        "$git_state"
         "$nix_shell"
         "$cmd_duration"
         "$jobs"
@@ -36,43 +44,33 @@ in
       right_format = "$time";
 
       username = {
-        format = "[ · ](frame)[$user]($style)";
-        style_user = "bold dir";
-        style_root = "bold err";
+        format = "[ $user ](bg:brand fg:surface)";
+        style_user = "bold";
+        style_root = "bold";
         show_always = false;
       };
       hostname = {
         ssh_only = true;
-        format = "[@$hostname](bold dir)";
-      };
-      jobs = {
-        format = "[ · ](frame)[$number jobs](nix)";
-        number_threshold = 1;
-        symbol_threshold = 1;
-      };
-      status = {
-        disabled = false;
-        format = "[ · ](frame)[exit $status](bold err)";
+        format = "[@$hostname ](bg:brand fg:surface)";
       };
 
       directory = {
-        format = "[$path]($style)[$read_only]($read_only_style)";
-        style = "bold nix";
+        format = "[ $path$read_only ](bg:nix fg:text)";
         truncation_length = 5;
         truncation_symbol = "…/";
         truncate_to_repo = false;
-        read_only = " ro ";
+        read_only = " ro";
         read_only_style = "bold err";
       };
 
       git_branch = {
-        format = "[$branch]($style)";
-        style = "bold git";
+        format = "[](git)[  $branch](bg:git fg:surface)";
+        style = "bg:git fg:surface";
       };
 
       git_status = {
-        format = "([ $all_status$ahead_behind]($style))";
-        style = "bold dirty";
+        format = "([ $all_status$ahead_behind](bg:git fg:surface))[](fg:git)";
+        style = "bg:git fg:surface";
         conflicted = "≠\${count}";
         ahead = "↑\${count}";
         behind = "↓\${count}";
@@ -85,20 +83,29 @@ in
         deleted = "✘\${count}";
       };
 
-      git_state.format = "[ · ](frame)[$state $progress_current/$progress_total](bold err)";
+      git_state.format = "[](err)[ $state $progress_current/$progress_total ](bg:err fg:text)[](fg:err)";
 
       # ❄ marks a `nix develop` / `nix shell` subshell.
       nix_shell = {
-        format = "[ · ](frame)[❄ $state]($style)";
-        style = "bold nix";
+        format = "[](nix)[ ❄ $state ](bg:nix fg:surface)[](fg:nix)";
         impure_msg = "impure";
         pure_msg = "pure";
       };
 
       cmd_duration = {
         min_time = 2000;
-        format = "[ · ](frame)[$duration]($style)";
-        style = "bold slow";
+        format = "[](slow)[ $duration ](bg:slow fg:surface)[](fg:slow)";
+      };
+
+      jobs = {
+        format = "[](slow)[ $number jobs ](bg:slow fg:surface)[](fg:slow)";
+        number_threshold = 1;
+        symbol_threshold = 1;
+      };
+
+      status = {
+        disabled = false;
+        format = "[](err)[ exit $status ](bg:err fg:text)[](fg:err)";
       };
 
       character = {
@@ -109,7 +116,7 @@ in
 
       time = {
         disabled = false;
-        format = "[$time ](cyan)";
+        format = "[](fg:overlay)[  $time ](bg:overlay fg:subtle)";
         time_format = "%H:%M";
       };
     };
