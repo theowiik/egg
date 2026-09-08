@@ -60,8 +60,9 @@ normal pure evaluation never accesses runtime settings.
 `configs/<name>.nix`. The installer defaults to `configs/personal.nix`;
 `--config <name>` selects another file and takes precedence over an absolute
 `EGG_CONFIG` override. Rebuilds remember the selected path. `configs/*.nix`
-are Git-ignored except `configs/example.nix`; read the live absolute path,
-not a path relative to the Git-filtered flake source. No `git add` is needed
+are Git-ignored except the template and the owner’s `puter.nix`/`neo.nix`;
+read the live absolute path, not a path relative to the Git-filtered flake
+source. No `git add` is needed
 for user configs. An explicitly named config must exist.
 `--build` builds without activation; `--news` shows news. `egg switch`/`hms`
 and `egg news`/`hmn` use this installer too. Previews remain hermetic.

@@ -65,10 +65,11 @@ with, and `hms --config laptop` selects another. Each file is a Home Manager
 module: it can set identity and `egg.extraPackages`. There are no built-in
 personal/work profiles; these are just filenames.
 
-Your files live in the repo directory but are Git-ignored; only
-`configs/example.nix` is shared. You can see and edit them together without
-changing `flake.nix`, and `git pull` leaves them alone. Back them up separately,
-or use `git add -f configs/<name>.nix` if you want to version one yourself.
+New config files live in the repo directory but are Git-ignored. You can edit
+them without changing `flake.nix`, and `git pull` leaves these ignored files
+alone. Back them up separately, or use `git add -f configs/<name>.nix` to version
+one yourself. The template and the owner’s `configs/puter.nix` and
+`configs/neo.nix` are tracked.
 
 The installer detects your username, home directory and platform, and remembers
 the checkout path. `EGG_DIR` overrides that path; `EGG_CONFIG` can still select
@@ -147,7 +148,7 @@ through `egg.extraPackages` in your local settings.
 ```
 flake.nix            constructors and compatibility entries, plus `nix run .#try` and `.#install`
 home.nix             what every machine gets
-configs/*.nix       your small config files (Git-ignored, except example.nix)
+configs/*.nix       your small config files (new files Git-ignored; shipped files tracked)
 modules/*.nix        the shared configuration, one file per concern
 modules/options.nix  the `egg.*` options user configs set
 lib/palette.nix      the colours everything else reads

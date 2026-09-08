@@ -6,6 +6,8 @@ result-*
 # Optional in-checkout settings, selected with an absolute EGG_CONFIG path.
 /local.nix
 
-# One personal config per file; the shared example stays tracked.
+# New user configs stay local; the template and owner machine configs are tracked.
 /configs/*.nix
 !/configs/example.nix
+!/configs/puter.nix
+!/configs/neo.nix
