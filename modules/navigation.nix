@@ -23,21 +23,21 @@ in
     defaultOptions = [
       "--height=70%"
       "--layout=reverse"
-      "--border=double"
+      "--border=rounded"
       "--padding=1,2"
-      "--border-label=' SCAN // egg '"
-      "--prompt='SCAN ❯ '"
-      "--pointer='▶'"
-      "--marker='◆'"
+      "--border-label=' egg '"
+      "--prompt='search · '"
+      "--pointer='•'"
+      "--marker='✓'"
       "--color=bg:${colors.surface},bg+:${colors.overlay},fg:${colors.text},fg+:${colors.text},hl:${colors.dir},hl+:${colors.brand}"
-      "--color=border:${colors.dir},header:${colors.brand},info:${colors.subtle},prompt:${colors.brand},pointer:${colors.brand},marker:${colors.git},spinner:${colors.brand}"
+      "--color=border:${colors.muted},header:${colors.brand},info:${colors.subtle},prompt:${colors.brand},pointer:${colors.brand},marker:${colors.git},spinner:${colors.brand}"
       "--info=inline"
     ];
     # ctrl-t — insert a file path, with a preview.
     fileWidget = {
       command = "fd --type f --hidden --exclude .git";
       options = [
-        "--prompt='FILE ❯ '"
+        "--prompt='file · '"
         "--header='Enter: insert path · Tab: select more · Esc: cancel'"
         "--preview 'bat --style=numbers --color=always --line-range=:200 -- {}'"
       ];
@@ -47,7 +47,7 @@ in
     changeDirWidget = {
       command = "fd --type d --hidden --exclude .git";
       options = [
-        "--prompt='JUMP ❯ '"
+        "--prompt='directory · '"
         "--header='Enter: open directory · Esc: cancel'"
         "--preview 'eza --tree --level=2 --color=always -- {}'"
       ];

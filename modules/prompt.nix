@@ -1,4 +1,4 @@
-# Powerline prompt: a peach path, mint Git context, and tangerine accents.
+# An open, two-line prompt with muted pastel text and quiet dot separators.
 {
   config,
   lib,
@@ -38,18 +38,12 @@ in
 
       palettes.egg = colors;
 
-      # Segments that always render (egg → directory) are chained with powerline
-      # separators; the optional context blocks are self-closing islands so an
-      # absent segment never leaves an empty colored wedge behind. Inverted
-      # opening arrows cut a right-facing notch using the terminal background.
+      # Optional context carries its own separator; no filled blocks or caps.
       format = lib.concatStrings [
-        "[](fg:frame inverted)"
-        "[🥚 ](bg:frame fg:text)"
+        "[🥚 ](fg:text)"
         "$username"
         "$hostname"
-        "[](fg:frame bg:path)"
         "$directory"
-        "[](fg:path)"
         "$git_branch"
         "$git_status"
         "$git_state"
@@ -62,27 +56,28 @@ in
       ];
 
       # The interactive shell renders the cheap modules immediately and fills
-      # this literal marker from a single asynchronous Git worker.
+      # this literal marker from a single asynchronous Git worker. The text
+      # group also delimits it from the preceding $directory variable.
       profiles.egg_fast =
-        lib.replaceStrings [ "$git_branch$git_status$git_state" ] [ "EGG_GIT_CONTEXT" ]
+        lib.replaceStrings [ "$git_branch$git_status$git_state" ] [ "[EGG_GIT_CONTEXT](fg:muted)" ]
           config.programs.starship.settings.format;
       profiles.egg_git = "$git_branch$git_status$git_state";
 
       right_format = "$time";
 
       username = {
-        format = "[ $user ](bg:frame fg:text)";
+        format = "[$user ](fg:subtle)";
         style_user = "bold";
         style_root = "bold";
         show_always = false;
       };
       hostname = {
         ssh_only = true;
-        format = "[@$hostname ](bg:frame fg:text)";
+        format = "[@$hostname ](fg:subtle)";
       };
 
       directory = {
-        format = "[ $path$read_only ](bg:path fg:surface)";
+        format = "[$path$read_only](bold fg:dir)";
         truncation_length = 5;
         truncation_symbol = "…/";
         truncate_to_repo = false;
@@ -91,13 +86,13 @@ in
       };
 
       git_branch = {
-        format = "[](fg:git inverted)[  $branch](bg:git fg:surface)";
-        style = "bg:git fg:surface";
+        format = "[  · ](fg:muted)[$branch](fg:git)";
+        style = "fg:git";
       };
 
       git_status = {
-        format = "([ $all_status$ahead_behind](bg:git fg:surface))[](fg:git)";
-        style = "bg:git fg:surface";
+        format = "([ $all_status$ahead_behind](fg:git))";
+        style = "fg:git";
         conflicted = "≠\${count}";
         ahead = "↑\${count}";
         behind = "↓\${count}";
@@ -110,35 +105,35 @@ in
         deleted = "✘\${count}";
       };
 
-      git_state.format = "[](fg:err inverted)[ $state $progress_current/$progress_total ](bg:err fg:surface)[](fg:err)";
+      git_state.format = "[  · ](fg:muted)[$state $progress_current/$progress_total](fg:err)";
 
       # ❄ marks a `nix develop` / `nix shell` subshell.
       nix_shell = {
-        format = "[](fg:nix inverted)[ ❄ $state ](bg:nix fg:surface)[](fg:nix)";
+        format = "[  · ](fg:muted)[❄ $state](fg:nix)";
         impure_msg = "impure";
         pure_msg = "pure";
       };
 
       cmd_duration = {
         min_time = 2000;
-        format = "[](fg:slow inverted)[ $duration ](bg:slow fg:surface)[](fg:slow)";
+        format = "[  · ](fg:muted)[$duration](fg:slow)";
       };
 
       jobs = {
-        format = "[](fg:slow inverted)[ $number jobs ](bg:slow fg:surface)[](fg:slow)";
+        format = "[  · ](fg:muted)[$number jobs](fg:slow)";
         number_threshold = 1;
         symbol_threshold = 1;
       };
 
       status = {
         disabled = false;
-        format = "[](fg:err inverted)[ exit $status ](bg:err fg:surface)[](fg:err)";
+        format = "[  · ](fg:muted)[exit $status](fg:err)";
       };
 
       character = {
-        success_symbol = "[❯](bold brand)";
-        error_symbol = "[❯](bold err)";
-        vimcmd_symbol = "[❮](bold git)";
+        success_symbol = "[›](bold brand)";
+        error_symbol = "[›](bold err)";
+        vimcmd_symbol = "[·](bold git)";
       };
 
       time = {

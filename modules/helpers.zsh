@@ -22,7 +22,7 @@ c() {
   local selected
   IFS= read -r -d $'\0' selected < <(
     fd --type d --hidden --exclude .git --print0 . "${1:-.}" |
-      fzf --read0 --print0 --prompt='JUMP ❯ ' \
+      fzf --read0 --print0 --prompt='directory · ' \
         --header='Enter: open directory · Esc: cancel' \
         --preview='eza --tree --level=2 --color=always -- {}'
   ) || return

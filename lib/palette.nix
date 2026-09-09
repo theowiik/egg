@@ -1,22 +1,22 @@
-# Shared tangerine, pastel peach, mint, and butter yellow colors for the shell UI.
+# Muted lavender, sage, and dusty blue on a cool charcoal base.
 { lib }:
 let
   rgb = {
-    frame = "68;52;46";
-    brand = "255;145;77";
-    clock = "255;122;38";
-    dir = "255;193;157";
-    git = "177;226;197";
-    dirty = "255;185;110";
-    path = "255;193;157";
-    nix = "199;208;245";
-    slow = "249;222;151";
-    err = "255;141;122";
-    muted = "160;146;135";
-    text = "255;243;233";
-    surface = "35;30;27";
-    overlay = "64;53;47";
-    subtle = "211;188;167";
+    frame = "48;52;64";
+    brand = "180;173;206";
+    clock = "231;174;145";
+    dir = "163;187;206";
+    git = "170;195;178";
+    dirty = "209;192;155";
+    path = "163;187;206";
+    nix = "180;173;206";
+    slow = "209;192;155";
+    err = "214;158;169";
+    muted = "133;139;157";
+    text = "220;224;232";
+    surface = "31;34;43";
+    overlay = "48;52;64";
+    subtle = "172;179;195";
   };
   hexByte = n: lib.fixedWidthString 2 "0" (lib.toLower (lib.toHexString n));
 in

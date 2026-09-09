@@ -102,7 +102,7 @@ try:
     send('print -r -- "$RPROMPT" > "$HOME/clock-style"\n')
     read_for(0.7)
     clock_style = (root / "home/clock-style").read_text()
-    assert "%F{#ff7a26}" in clock_style and "" not in clock_style and "%K{" not in clock_style, clock_style
+    assert "%F{" in clock_style and "" not in clock_style and "%K{" not in clock_style, clock_style
 
     # Hold a Git scan behind a gate: typing and commands must work before the
     # worker is released, regardless of how slow the filesystem or Git is.

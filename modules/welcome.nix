@@ -26,7 +26,7 @@ in
         # This avoids showing the welcome and then pausing before the cursor.
         autoload -Uz add-zsh-hook
         _egg_welcome_once() {
-          printf '\n\033[1;${colors.brand}m  🥚 egg\033[0m\n\033[${colors.subtle}m  %s\033[0m\n\033[${colors.muted}m  → \033[${colors.dir}megg help\033[0m\n\n' '${platform} · ${toString (builtins.length config.egg.toolbox)} tools'
+          printf '\n\033[1;${colors.brand}m  🥚 egg\033[0m\n\033[${colors.subtle}m  %s\033[0m\n\033[${colors.muted}m  · \033[${colors.dir}megg help\033[0m\n\n' '${platform} · ${toString (builtins.length config.egg.toolbox)} tools'
           add-zsh-hook -d precmd _egg_welcome_once
           unfunction _egg_welcome_once
         }
