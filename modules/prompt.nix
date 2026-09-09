@@ -1,4 +1,4 @@
-# An open, two-line prompt with muted pastel text and quiet dot separators.
+# Two rounded pastel badges, with quiet text for transient prompt context.
 {
   config,
   lib,
@@ -38,7 +38,7 @@ in
 
       palettes.egg = colors;
 
-      # Optional context carries its own separator; no filled blocks or caps.
+      # Rounded path and branch badges anchor the prompt; other context stays light.
       format = lib.concatStrings [
         "[🥚 ](fg:text)"
         "$username"
@@ -77,7 +77,7 @@ in
       };
 
       directory = {
-        format = "[$path$read_only](bold fg:dir)";
+        format = "[](fg:path)[ $path$read_only ](bold bg:path fg:surface)[](fg:path)";
         truncation_length = 5;
         truncation_symbol = "…/";
         truncate_to_repo = false;
@@ -86,7 +86,7 @@ in
       };
 
       git_branch = {
-        format = "[  · ](fg:muted)[$branch](fg:git)";
+        format = " [](fg:git)[ $branch ](bg:git fg:surface)[](fg:git)";
         style = "fg:git";
       };
 
