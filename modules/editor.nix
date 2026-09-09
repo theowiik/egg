@@ -16,7 +16,7 @@
     ];
 
     settings = {
-      theme = "tokyonight_storm"; # matches the prompt palette
+      theme = "tokyonight_storm";
 
       editor = {
         line-number = "relative";

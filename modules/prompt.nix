@@ -1,11 +1,11 @@
-# Powerline prompt: an egg, a lavender path, and mint Git context on filled segments.
+# Powerline prompt: an amber egg badge, steel blue path, and olive Git context.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
 in
 {
   programs.zsh.initContent = lib.mkOrder 1700 (
-    lib.replaceStrings [ "@clockColor@" ] [ colors.cyan ] (builtins.readFile ./clock.zsh)
+    lib.replaceStrings [ "@clockColor@" ] [ colors.dir ] (builtins.readFile ./clock.zsh)
   );
 
   programs.starship = {
@@ -28,9 +28,9 @@ in
         "[🥚 ](bg:brand fg:surface)"
         "$username"
         "$hostname"
-        "[](fg:brand bg:nix)"
+        "[](fg:brand bg:path)"
         "$directory"
-        "[](fg:nix)"
+        "[](fg:path)"
         "$git_branch"
         "$git_status"
         "$git_state"
@@ -56,7 +56,7 @@ in
       };
 
       directory = {
-        format = "[ $path$read_only ](bg:nix fg:text)";
+        format = "[ $path$read_only ](bg:path fg:text)";
         truncation_length = 5;
         truncation_symbol = "…/";
         truncate_to_repo = false;
@@ -110,7 +110,7 @@ in
       };
 
       character = {
-        success_symbol = "[❯](bold pink)";
+        success_symbol = "[❯](bold brand)";
         error_symbol = "[❯](bold err)";
         vimcmd_symbol = "[❮](bold git)";
       };

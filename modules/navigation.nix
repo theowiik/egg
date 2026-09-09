@@ -21,7 +21,7 @@ in
       "--prompt='SCAN ❯ '"
       "--pointer='▶'"
       "--marker='◆'"
-      "--color=bg:${colors.surface},bg+:${colors.overlay},fg:${colors.text},fg+:${colors.text},hl:${colors.dir},hl+:${colors.cyan}"
+      "--color=bg:${colors.surface},bg+:${colors.overlay},fg:${colors.text},fg+:${colors.text},hl:${colors.dir},hl+:${colors.brand}"
       "--color=border:${colors.dir},header:${colors.brand},info:${colors.subtle},prompt:${colors.brand},pointer:${colors.brand},marker:${colors.git},spinner:${colors.brand}"
       "--info=inline"
     ];
