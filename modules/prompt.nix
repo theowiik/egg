@@ -1,11 +1,11 @@
-# Powerline prompt: an amber egg badge, steel blue path, and olive Git context.
+# Powerline prompt: electric orange accents around a graphite path.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
 in
 {
   programs.zsh.initContent = lib.mkOrder 1700 (
-    lib.replaceStrings [ "@clockColor@" ] [ colors.dir ] (builtins.readFile ./clock.zsh)
+    lib.replaceStrings [ "@clockColor@" ] [ colors.subtle ] (builtins.readFile ./clock.zsh)
   );
 
   programs.starship = {
@@ -84,7 +84,7 @@ in
         deleted = "✘\${count}";
       };
 
-      git_state.format = "[](fg:err inverted)[ $state $progress_current/$progress_total ](bg:err fg:text)[](fg:err)";
+      git_state.format = "[](fg:err inverted)[ $state $progress_current/$progress_total ](bg:err fg:surface)[](fg:err)";
 
       # ❄ marks a `nix develop` / `nix shell` subshell.
       nix_shell = {
@@ -106,7 +106,7 @@ in
 
       status = {
         disabled = false;
-        format = "[](fg:err inverted)[ exit $status ](bg:err fg:text)[](fg:err)";
+        format = "[](fg:err inverted)[ exit $status ](bg:err fg:surface)[](fg:err)";
       };
 
       character = {
