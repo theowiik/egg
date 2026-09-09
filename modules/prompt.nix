@@ -21,9 +21,10 @@ in
 
       # Segments that always render (egg → directory) are chained with powerline
       # separators; the optional context blocks are self-closing islands so an
-      # absent segment never leaves an empty colored wedge behind.
+      # absent segment never leaves an empty colored wedge behind. Inverted
+      # opening arrows cut a right-facing notch using the terminal background.
       format = lib.concatStrings [
-        "[](brand)"
+        "[](fg:brand inverted)"
         "[🥚 ](bg:brand fg:surface)"
         "$username"
         "$hostname"
@@ -64,7 +65,7 @@ in
       };
 
       git_branch = {
-        format = "[](git)[  $branch](bg:git fg:surface)";
+        format = "[](fg:git inverted)[  $branch](bg:git fg:surface)";
         style = "bg:git fg:surface";
       };
 
@@ -83,29 +84,29 @@ in
         deleted = "✘\${count}";
       };
 
-      git_state.format = "[](err)[ $state $progress_current/$progress_total ](bg:err fg:text)[](fg:err)";
+      git_state.format = "[](fg:err inverted)[ $state $progress_current/$progress_total ](bg:err fg:text)[](fg:err)";
 
       # ❄ marks a `nix develop` / `nix shell` subshell.
       nix_shell = {
-        format = "[](nix)[ ❄ $state ](bg:nix fg:surface)[](fg:nix)";
+        format = "[](fg:nix inverted)[ ❄ $state ](bg:nix fg:surface)[](fg:nix)";
         impure_msg = "impure";
         pure_msg = "pure";
       };
 
       cmd_duration = {
         min_time = 2000;
-        format = "[](slow)[ $duration ](bg:slow fg:surface)[](fg:slow)";
+        format = "[](fg:slow inverted)[ $duration ](bg:slow fg:surface)[](fg:slow)";
       };
 
       jobs = {
-        format = "[](slow)[ $number jobs ](bg:slow fg:surface)[](fg:slow)";
+        format = "[](fg:slow inverted)[ $number jobs ](bg:slow fg:surface)[](fg:slow)";
         number_threshold = 1;
         symbol_threshold = 1;
       };
 
       status = {
         disabled = false;
-        format = "[](err)[ exit $status ](bg:err fg:text)[](fg:err)";
+        format = "[](fg:err inverted)[ exit $status ](bg:err fg:text)[](fg:err)";
       };
 
       character = {
@@ -116,7 +117,7 @@ in
 
       time = {
         disabled = false;
-        format = "[](fg:overlay)[  $time ](bg:overlay fg:subtle)";
+        format = "[](fg:overlay inverted)[  $time ](bg:overlay fg:subtle)";
         time_format = "%H:%M";
       };
     };
