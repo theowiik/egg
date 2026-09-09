@@ -17,7 +17,7 @@ if [[ -o interactive && -t 0 && -t 1 && ${TERM:-dumb} != dumb && -z ${EGG_NO_LIV
     # Parameter expansion is not evaluated recursively: filenames containing
     # shell syntax remain text, just as in Starship's original prompt.
     PROMPT='${_egg_clock_left}'
-    RPROMPT='%F{@clockColor@}%D{%H:%M:%S}%f '
+    RPROMPT='%F{@clockBackground@}%S%s%f%K{@clockBackground@}%F{@clockForeground@} %D{%H:%M:%S} %f%k%F{@clockBackground@}%f '
   }
 
   _egg_clock_stop() {

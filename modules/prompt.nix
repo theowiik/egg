@@ -5,7 +5,9 @@ let
 in
 {
   programs.zsh.initContent = lib.mkOrder 1700 (
-    lib.replaceStrings [ "@clockColor@" ] [ colors.subtle ] (builtins.readFile ./clock.zsh)
+    lib.replaceStrings [ "@clockBackground@" "@clockForeground@" ] [ colors.brand colors.surface ] (
+      builtins.readFile ./clock.zsh
+    )
   );
 
   programs.starship = {
@@ -24,11 +26,11 @@ in
       # absent segment never leaves an empty colored wedge behind. Inverted
       # opening arrows cut a right-facing notch using the terminal background.
       format = lib.concatStrings [
-        "[](fg:brand inverted)"
-        "[🥚 ](bg:brand fg:surface)"
+        "[](fg:frame inverted)"
+        "[🥚 ](bg:frame fg:text)"
         "$username"
         "$hostname"
-        "[](fg:brand bg:path)"
+        "[](fg:frame bg:path)"
         "$directory"
         "[](fg:path)"
         "$git_branch"
@@ -45,14 +47,14 @@ in
       right_format = "$time";
 
       username = {
-        format = "[ $user ](bg:brand fg:surface)";
+        format = "[ $user ](bg:frame fg:text)";
         style_user = "bold";
         style_root = "bold";
         show_always = false;
       };
       hostname = {
         ssh_only = true;
-        format = "[@$hostname ](bg:brand fg:surface)";
+        format = "[@$hostname ](bg:frame fg:text)";
       };
 
       directory = {
@@ -117,7 +119,7 @@ in
 
       time = {
         disabled = false;
-        format = "[](fg:overlay inverted)[  $time ](bg:overlay fg:subtle)";
+        format = "[](fg:brand inverted)[ $time ](bg:brand fg:surface)[](fg:brand)";
         time_format = "%H:%M";
       };
     };

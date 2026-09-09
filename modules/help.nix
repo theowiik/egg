@@ -17,7 +17,7 @@ let
   sgr = n: "${esc}[${n}m";
 
   reset = sgr "0";
-  brand = sgr "1;${colors.brand}"; # matches the prompt badge
+  brand = sgr "1;${colors.brand}"; # matches the prompt accent
   head = sgr "1;${colors.dir}";
   cmd = sgr colors.git;
   grey = sgr colors.muted;
