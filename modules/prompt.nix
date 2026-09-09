@@ -1,4 +1,4 @@
-# Powerline prompt: yolk accents, eggshell Git context, and a charcoal path.
+# Powerline prompt: a peach path, mint Git context, and tangerine accents.
 {
   config,
   lib,
@@ -82,7 +82,7 @@ in
       };
 
       directory = {
-        format = "[ $path$read_only ](bg:path fg:text)";
+        format = "[ $path$read_only ](bg:path fg:surface)";
         truncation_length = 5;
         truncation_symbol = "…/";
         truncate_to_repo = false;
