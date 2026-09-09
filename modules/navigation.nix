@@ -1,14 +1,22 @@
 # fzf: fuzzy history (ctrl-r), file paths (ctrl-t) and directories (alt-c),
 # plus the handful of shell functions built on it. Wired into zsh by
 # home-manager; the widgets shell out to fd and eza.
-{ lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
+  fzfInit = pkgs.runCommand "egg-fzf-init.zsh" { } ''
+    ${lib.getExe config.programs.fzf.package} --zsh > "$out"
+  '';
 in
 {
   programs.fzf = {
     enable = true;
-    enableZshIntegration = true;
+    enableZshIntegration = false;
 
     # Respect .gitignore and include dotfiles, but never walk into .git.
     defaultCommand = "fd --type f --hidden --exclude .git";
@@ -47,5 +55,12 @@ in
   };
 
   # mkcd, ff and c — new commands, none of them shadowing a standard one.
-  programs.zsh.initContent = lib.mkOrder 1000 (builtins.readFile ./helpers.zsh);
+  programs.zsh.initContent = lib.mkMerge [
+    (lib.mkOrder 910 ''
+      if [[ $options[zle] = on ]]; then
+        source ${fzfInit}
+      fi
+    '')
+    (lib.mkOrder 1000 (builtins.readFile ./helpers.zsh))
+  ];
 }

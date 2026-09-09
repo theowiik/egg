@@ -55,4 +55,9 @@ git pull
 hms
 ```
 
+The prompt is ready before Git finishes scanning. Git context refreshes after
+commands; an empty Enter reuses the current context. The orange clock updates
+without rerunning Starship. Set `EGG_NO_LIVE_CLOCK=1` in `~/.zshrc.local` to
+freeze it between commands.
+
 For development: `nix flake check` runs tests; `nix fmt` formats Nix files.

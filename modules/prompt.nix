@@ -1,18 +1,35 @@
 # Powerline prompt: yolk accents, eggshell Git context, and a charcoal path.
-{ lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;
+  starship = lib.getExe config.programs.starship.package;
+  starshipInit = pkgs.runCommand "egg-starship-init.zsh" { } ''
+    ${starship} init zsh --print-full-init > "$out"
+  '';
 in
 {
-  programs.zsh.initContent = lib.mkOrder 1700 (
-    lib.replaceStrings [ "@clockBackground@" "@clockForeground@" ] [ colors.brand colors.surface ] (
-      builtins.readFile ./clock.zsh
-    )
-  );
+  programs.zsh.initContent = lib.mkMerge [
+    (lib.mkOrder 1000 ''
+      if [[ $TERM != dumb ]]; then
+        source ${starshipInit}
+      fi
+    '')
+    (lib.mkOrder 1700 (
+      lib.replaceStrings
+        [ "@clockColor@" "@starship@" "@durationThreshold@" ]
+        [ colors.clock starship (toString config.programs.starship.settings.cmd_duration.min_time) ]
+        (builtins.readFile ./clock.zsh)
+    ))
+  ];
 
   programs.starship = {
     enable = true;
-    enableZshIntegration = true;
+    enableZshIntegration = false;
 
     settings = {
       add_newline = true;
@@ -43,6 +60,13 @@ in
         "$line_break"
         "$character"
       ];
+
+      # The interactive shell renders the cheap modules immediately and fills
+      # this literal marker from a single asynchronous Git worker.
+      profiles.egg_fast =
+        lib.replaceStrings [ "$git_branch$git_status$git_state" ] [ "EGG_GIT_CONTEXT" ]
+          config.programs.starship.settings.format;
+      profiles.egg_git = "$git_branch$git_status$git_state";
 
       right_format = "$time";
 
@@ -119,7 +143,7 @@ in
 
       time = {
         disabled = false;
-        format = "[](fg:brand inverted)[ $time ](bg:brand fg:surface)[](fg:brand)";
+        format = "[$time](fg:clock)";
         time_format = "%H:%M";
       };
     };

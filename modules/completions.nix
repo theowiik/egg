@@ -50,11 +50,14 @@ in
     completionInit = ''
       autoload -Uz compinit
       _zcompdump="${config.xdg.cacheHome}/zsh/zcompdump-$ZSH_VERSION"
-      mkdir -p "''${_zcompdump:h}"
+      [[ -d "''${_zcompdump:h}" ]] || mkdir -p "''${_zcompdump:h}"
       # Glob qualifiers only expand in an assignment here, not inside [[ ]].
       _zcompstale=( "$_zcompdump"(N.mh+24) )
       if (( $#_zcompstale )) || [[ ! -f "$_zcompdump" ]]; then
         compinit -d "$_zcompdump"
+        # compinit leaves an unchanged dump's mtime alone; mark this audit so
+        # a day-old dump doesn't trigger a full scan in every new terminal.
+        [[ ! -f "$_zcompdump" ]] || touch "$_zcompdump"
       else
         compinit -C -d "$_zcompdump"
       fi

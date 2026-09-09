@@ -6,6 +6,7 @@ from pathlib import Path
 import pty
 import re
 import select
+import signal
 import struct
 import termios
 import time
@@ -81,6 +82,70 @@ try:
     send('print -r -- "LAST_STATUS:$?"\n')
     output = read_for(0.7)
     assert "LAST_STATUS:1" in output, "clock changed the last command status: " + output
+    # Exercise real Git output as well as the gated worker below. A literal
+    # marker in the path must survive insertion, and Git must remain inline.
+    send('mkdir "$HOME/EGG_GIT_CONTEXT"; cd "$HOME/EGG_GIT_CONTEXT"; git init -q; git -c user.name=Test -c user.email=test@example.invalid commit --allow-empty -qm initial; git checkout -qb egg-speed-test; touch changed\n')
+    deadline = time.monotonic() + 10
+    while True:
+        read_for(0.3)
+        send('print -r -- "$_egg_git_context" > "$HOME/real-git"; print -r -- "$_egg_clock_left" > "$HOME/real-prompt"\n')
+        read_for(0.3)
+        context = (root / "home/real-git").read_text().rstrip('\n')
+        if "egg-speed-test" in context:
+            break
+        assert time.monotonic() < deadline, "real Git context did not arrive"
+    assert '\n' not in context and '?1' in context, "Git split the prompt or lost status: " + repr(context)
+    assert 'EGG_GIT_CONTEXT' in (root / "home/real-prompt").read_text(), "Git insertion overwrote the path"
+
+    # Inspect the prompt as data rather than typing Unicode into the terminal;
+    # minimal build environments may not have the requested UTF-8 locale.
+    send('print -r -- "$RPROMPT" > "$HOME/clock-style"\n')
+    read_for(0.7)
+    clock_style = (root / "home/clock-style").read_text()
+    assert "%F{#ff7a26}" in clock_style and "" not in clock_style and "%K{" not in clock_style, clock_style
+
+    # Hold a Git scan behind a gate: typing and commands must work before the
+    # worker is released, regardless of how slow the filesystem or Git is.
+    send('saved_git_renderer=$functions[_egg_git_render]; _egg_git_render() { print started > "$HOME/git-worker-started"; while [[ ! -f "$HOME/release-git" ]]; do sleep 0.05; done; print STALE_GIT_RESULT; }\n')
+    deadline = time.monotonic() + 10
+    while not (root / "home/git-worker-started").exists():
+        read_for(0.05)
+        assert time.monotonic() < deadline, "Git worker did not start"
+    send('print accepted > "$HOME/async-input"\n')
+    deadline = time.monotonic() + 5
+    while not (root / "home/async-input").exists():
+        read_for(0.05)
+        assert time.monotonic() < deadline, "slow Git blocked the input prompt"
+
+    # Change directories while that scan is still pending. Its old result
+    # must never appear, and the replacement must retain partially typed input.
+    send('_egg_git_render() { print -r -- "FRESH_GIT:$PWD"; }; mkdir -p "$HOME/next-directory"; cd "$HOME/next-directory"; print ready > "$HOME/directory-ready"\n')
+    deadline = time.monotonic() + 5
+    while not (root / "home/directory-ready").exists():
+        read_for(0.05)
+        assert time.monotonic() < deadline, "directory change blocked on stale Git"
+    read_for(0.1)
+    send('print ASYNC_BUFFER_SURVIVES > "$HOME/async-buffer"')
+    (root / "home/release-git").touch()
+    output = read_for(0.8)
+    assert "STALE_GIT_RESULT" not in output, "old directory Git leaked into the prompt: " + output
+    assert "FRESH_GIT:" in output and "next-directory" in output, "fresh Git context did not arrive: " + output
+    send('\n')
+    output = read_for(0.7)
+    assert (root / "home/async-buffer").read_text().strip() == "ASYNC_BUFFER_SURVIVES", "Git redraw lost the input buffer: " + output
+
+    # Empty Enter must neither start another scan nor regenerate the base UI.
+    send('_egg_git_render() { print scan >> "$HOME/git-scans"; }; _egg_clock_template=\'$(print render >> "$HOME/base-renders"; print -r -- "FAST_BASE EGG_GIT_CONTEXT")\'\n')
+    read_for(0.7)
+    send('\n')  # Clear the previous command's status/duration once.
+    read_for(0.3)
+    scans = (root / "home/git-scans").read_text()
+    renders = (root / "home/base-renders").read_text()
+    send('\n\n\n')
+    read_for(0.5)
+    assert (root / "home/git-scans").read_text() == scans, "empty Enter rescanned Git"
+    assert (root / "home/base-renders").read_text() == renders, "empty Enter rerendered Starship"
+
     send('exit\n')
     read_for(0.5)
     _, status = os.waitpid(pid, 0)
@@ -89,9 +154,17 @@ try:
     assert not root.exists(), "interactive preview did not clean up"
 finally:
     if pid is not None:
-        send('\x03exit\n')
+        send('\x03')
+        read_for(0.2)
+        send('exit\n')
         read_for(0.5)
-        os.waitpid(pid, 0)
+        deadline = time.monotonic() + 3
+        while os.waitpid(pid, os.WNOHANG)[0] == 0:
+            if time.monotonic() >= deadline:
+                os.killpg(pid, signal.SIGKILL)
+                os.waitpid(pid, 0)
+                break
+            read_for(0.1)
     os.close(fd)
 
 print("Interactive live clock checks passed")
