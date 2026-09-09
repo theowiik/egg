@@ -1,4 +1,4 @@
-# Powerline prompt: electric orange accents around a graphite path.
+# Powerline prompt: yolk accents, eggshell Git context, and a charcoal path.
 { lib, ... }:
 let
   colors = (import ../lib/palette.nix { inherit lib; }).hex;

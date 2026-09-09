@@ -1,21 +1,21 @@
-# Shared near-black, electric orange, and white colors for the shell UI.
+# Shared yolk yellow, eggshell cream, and warm charcoal colors for the shell UI.
 { lib }:
 let
   rgb = {
-    frame = "48;48;48";
-    brand = "255;92;0";
-    dir = "255;122;38";
-    git = "255;92;0";
-    dirty = "255;176;0";
-    path = "36;36;36";
-    nix = "190;194;200";
-    slow = "255;176;0";
-    err = "255;59;48";
-    muted = "128;128;128";
-    text = "245;245;245";
-    surface = "12;12;12";
-    overlay = "42;42;42";
-    subtle = "180;180;180";
+    frame = "49;45;38";
+    brand = "255;200;61";
+    dir = "255;200;61";
+    git = "239;230;211";
+    dirty = "242;163;40";
+    path = "35;33;29";
+    nix = "213;195;159";
+    slow = "242;163;40";
+    err = "242;100;65";
+    muted = "137;130;116";
+    text = "250;246;235";
+    surface = "18;17;14";
+    overlay = "45;42;35";
+    subtle = "191;182;162";
   };
   hexByte = n: lib.fixedWidthString 2 "0" (lib.toLower (lib.toHexString n));
 in
